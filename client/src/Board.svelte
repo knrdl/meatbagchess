@@ -56,7 +56,9 @@
     }
 
     function handlePromotion({ type, target }: { type: PieceSymbol; target: Square }) {
-        dispatch('move', { from: selectedPiece!.square, to: target, promotion: type });
+        const move = { from: selectedPiece!.square, to: target };
+        dispatch('move', { ...move, promotion: type });
+        lastMove = move;
         selectedPiece = null;
     }
 </script>
