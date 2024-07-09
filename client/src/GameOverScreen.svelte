@@ -25,6 +25,8 @@
         text-align: center;
         border: none;
         margin: 0;
+        padding: 0.5rem;
+        word-wrap: break-word;
 
         font-size: 3rem;
         letter-spacing: 1rem;
