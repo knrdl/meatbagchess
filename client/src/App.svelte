@@ -18,10 +18,11 @@
       window.location.search = params.toString();
     } else {
       socket = io({ query: { gameId } });
+      $game = new Game('w', socket); // show an empty game as background of the new game dialog
 
       socket.on('continue-game', ({ fen, yourColor }: { fen: string; yourColor: Color }) => {
         newGameDialog.close();
-        $game?.stop()
+        $game?.stop();
         $game = new Game(yourColor, socket);
         $game.chess.load(fen);
         $game = $game;
@@ -32,7 +33,7 @@
       socket.on('start-game', ({ yourColor }) => {
         newGameDialog.close();
         reload = true;
-        $game?.stop()
+        $game?.stop();
         tick().then(() => {
           $game = new Game(yourColor, socket);
           reload = false;
