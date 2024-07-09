@@ -16,7 +16,7 @@
         {#each order as type}
             {@const count = captures.filter((c) => c === type).length}
             {#if count > 0}
-                <div style="position: relative">
+                <div style="position: relative" class:last_capture={captures[captures.length - 1] == type}>
                     <PieceImg color={capturedBy === 'us' ? $game.theirColor : $game.ourColor} {type} --size="4rem" />
                     {#if count > 1}
                         <div class="dot">{count}</div>
@@ -37,5 +37,11 @@
         bottom: 0.5rem;
         width: 1.5rem;
         height: 1.5rem;
+    }
+
+    .last_capture {
+        border-bottom: 1px solid gray;
+        border-radius: 8px;
+        border-top: 1px solid gray;
     }
 </style>
