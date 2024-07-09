@@ -147,4 +147,19 @@
     .board > .square.check {
         box-shadow: inset 0 0 20px red;
     }
+
+    @media screen and (max-width: 500px) {
+        .board {
+            gap: 0.1rem;
+        }
+
+        .board > .square {
+            background-size: 125%;
+        }
+
+        .board > .square > .move-target {
+            width: 1rem;
+            height: 1rem;
+        }
+    }
 </style>
