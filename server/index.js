@@ -169,9 +169,13 @@ io.on('connection', async (socket) => {
                     const undoRequestBy = games.get(gameId).undoRequestBy
                     if (undoRequestBy && undoRequestBy !== socket.data.color) {
                         updateGame(gameId, { undoRequestBy: undefined })
+                        const undoTurns = games.get(gameId).chess.turn() === undoRequestBy ? 2 : 1
                         const move = games.get(gameId).chess.undo()
                         if (move) {
-                            io.to(room(gameId)).emit('undo')
+                            if (undoTurns === 2) {
+                                games.get(gameId).chess.undo()
+                            }
+                            io.to(room(gameId)).emit('undo', { turns: undoTurns })
                         }
                     }
                 }
@@ -199,5 +203,5 @@ io.on('connection', async (socket) => {
 })
 
 server.listen(8000, () => {
-    console.log('server running on port 8000')
+    console.info('server running on port 8000')
 })

@@ -49,10 +49,12 @@ export class Game {
             game.set(this)
         })
 
-        socket.on('undo', () => {
-            const move = this.chess.undo()
-            if (move?.captured) {
-                this.captures[move.color].splice(this.captures[move.color].indexOf(move.captured), 1)
+        socket.on('undo', ({ turns }: { turns: number }) => {
+            for (let i = 0; i < turns; i++) {
+                const move = this.chess.undo()
+                if (move?.captured) {
+                    this.captures[move.color].splice(this.captures[move.color].indexOf(move.captured), 1)
+                }
             }
             game.set(this)
         })
