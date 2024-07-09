@@ -1,7 +1,11 @@
 <script lang="ts">
     import type { Color } from 'chess.js';
+    import { game } from './game';
+    import { slide } from 'svelte/transition';
 
     export let color: Color;
+
+    let handle: number | null = null;
 
     function formatTime(seconds: number) {
         const h = Math.floor(seconds / 60 / 60);
@@ -10,15 +14,22 @@
         return (h > 0 ? [h, m, s] : [m, s]).join(':').replace(/\b(\d)\b/g, '0$1');
     }
 
-    let elapsedTime = 0;
+    $: elapsedTime = $game.elapsedTime[color];
+
+    $: if (elapsedTime !== null && handle === null) {
+        handle = setInterval(() => {
+            if ($game.chess.turn() === color) {
+                elapsedTime!++;
+            }
+        }, 1000);
+    }
 </script>
 
-<div>
-    {#if elapsedTime > 0}
+{#if elapsedTime !== null}
+    <div transition:slide>
         {formatTime(elapsedTime)}
-        {color}
-    {/if}
-</div>
+    </div>
+{/if}
 
 <style>
     div {

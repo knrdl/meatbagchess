@@ -21,7 +21,7 @@
 </script>
 
 {#if $game.status === 'playing'}
-  <aside transition:fade>
+  <aside transition:fade style="margin-bottom: .5rem;">
     <Actions />
   </aside>
 {/if}

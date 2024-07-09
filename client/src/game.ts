@@ -16,6 +16,8 @@ export class Game {
     public hasDrawOffer = false
     public hasUndoRequest = false
 
+    public elapsedTime: { [key in Color]: number | null } = { w: null, b: null }
+
     constructor(public ourColor: Color, private socket: Socket) {
 
         socket.on('move', ({ from, to, promotion }) => {
@@ -29,6 +31,11 @@ export class Game {
 
         socket.on('status-update', status => {
             this.status = status
+            game.set(this)
+        })
+
+        socket.on('clock-sync', elapsedTime => {
+            this.elapsedTime = elapsedTime
             game.set(this)
         })
 

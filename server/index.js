@@ -15,6 +15,7 @@ const io = new Server(server)
  *  chess?: Chess, 
  *  drawOfferBy?: Color,
  *  undoRequestBy?: Color,
+ *  clock?: {elapsed: {w: number|null, b: number|null}, stamps: {w?: number, b?: number}}
  * }>}
 */
 const games = new Map()
@@ -40,7 +41,7 @@ async function tryStartGame(gameId) {
                 const otherSocket = sockets.find(socket => socket !== readySocket)
                 otherSocket.data.color = (readySocket.data.color === WHITE ? BLACK : WHITE)
 
-                updateGame(gameId, { status: 'playing', chess: new Chess() })
+                updateGame(gameId, { status: 'playing', chess: new Chess(), clock: { elapsed: { w: null, b: null }, stamps: {} } })
 
                 sockets.forEach(socket => {
                     socket.emit('start-game', { yourColor: socket.data.color })
@@ -94,6 +95,17 @@ io.on('connection', async (socket) => {
                         }
                     })()
                     if (move) {
+                        if (!games.get(gameId).clock.stamps[socket.data.color]) {
+                            games.get(gameId).clock.elapsed[socket.data.color] = 0
+                            games.get(gameId).clock.stamps[socket.data.color] = epoch()
+                        } else {
+                            const now = epoch()
+                            const theirColor = socket.data.color === WHITE ? BLACK : WHITE
+                            games.get(gameId).clock.elapsed[socket.data.color] += (now - games.get(gameId).clock.stamps[theirColor])
+                            games.get(gameId).clock.stamps[socket.data.color] = now
+                        }
+                        io.to(room(gameId)).emit('clock-sync', games.get(gameId).clock.elapsed)
+
                         io.to(room(gameId)).emit('move', move)
 
                         if (chess.isGameOver()) {
@@ -172,9 +184,10 @@ io.on('connection', async (socket) => {
             })
 
             socket.on('disconnect', async (reason) => {
-                const sockets = await io.in(room(gameId)).fetchSockets()
-                if (sockets.length < 2)
-                    emitStatus('user disconnected')
+                // todo:
+                // const sockets = await io.in(room(gameId)).fetchSockets()
+                // if (sockets.length < 2)
+                //     emitStatus('user disconnected')
                 console.log('user disconnected:', reason)
             })
         } else {
