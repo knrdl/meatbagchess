@@ -1,0 +1,18 @@
+{
+  "name": "meatbagchess-server",
+  "version": "0.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "node ."
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "type": "module",
+  "dependencies": {
+    "@types/node": "^20.14.10",
+    "chess.js": "^1.0.0-beta.8",
+    "express": "^4.19.2",
+    "socket.io": "^4.7.5"
+  }
+}
