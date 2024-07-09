@@ -8,7 +8,10 @@
 
     let dialog: HTMLDialogElement;
 
+    let isWaiting = false;
+
     export function show() {
+        isWaiting = false;
         dialog.showModal();
     }
 
@@ -53,6 +56,7 @@
         <button
             type="button"
             on:click={() => {
+                isWaiting = true;
                 dispatch('create', 'w');
             }}
         >
@@ -61,6 +65,7 @@
         <button
             type="button"
             on:click={() => {
+                isWaiting = true;
                 dispatch('create', Math.random() >= 0.5 ? 'b' : 'w');
             }}
         >
@@ -79,12 +84,16 @@
         <button
             type="button"
             on:click={() => {
+                isWaiting = true;
                 dispatch('create', 'b');
             }}
         >
             <PieceImg color="b" type="k" />
         </button>
     </div>
+    {#if isWaiting}
+        <div style="margin-top: 1rem;">Waiting for the opponent to join . . .</div>
+    {/if}
 </dialog>
 
 <style>
