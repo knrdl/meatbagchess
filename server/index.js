@@ -33,20 +33,20 @@ function updateGame(gameId, updater) {
 }
 
 async function tryStartGame(gameId) {
-    if (games.get(gameId).status === 'preparing') {
-        const sockets = await io.in(room(gameId)).fetchSockets()
-        if (sockets.length === 2) {
-            const readySocket = sockets.find(socket => socket.data.color)
-            if (readySocket) {
-                const otherSocket = sockets.find(socket => socket !== readySocket)
-                otherSocket.data.color = (readySocket.data.color === WHITE ? BLACK : WHITE)
+    const sockets = await io.in(room(gameId)).fetchSockets()
+    if (sockets.length === 2) {
+        const readySocket = sockets.find(socket => socket.data.color)
+        if (readySocket) {
+            console.info('start game', gameId)
 
-                updateGame(gameId, { status: 'playing', chess: new Chess(), clock: { elapsed: { w: null, b: null }, stamps: {} } })
+            const otherSocket = sockets.find(socket => socket !== readySocket)
+            otherSocket.data.color = (readySocket.data.color === WHITE ? BLACK : WHITE)
 
-                sockets.forEach(socket => {
-                    socket.emit('start-game', { yourColor: socket.data.color })
-                })
-            }
+            updateGame(gameId, { status: 'playing', chess: new Chess(), clock: { elapsed: { w: null, b: null }, stamps: {} } })
+
+            sockets.forEach(socket => {
+                socket.emit('start-game', { yourColor: socket.data.color })
+            })
         }
     }
 }
@@ -60,12 +60,19 @@ io.on('connection', async (socket) => {
 
         const emitStatus = status => io.to(room(gameId)).emit('status-update', status)
 
-        const sockets = await io.in(room(gameId)).fetchSockets()
-        if (sockets.length < 2) {
-            socket.data.gameId = gameId
+        const roomSockets = await io.in(room(gameId)).fetchSockets()
+        if (roomSockets.length < 2) {
             socket.join(room(gameId))
 
-            tryStartGame(gameId)
+            if (games.get(gameId).status === 'preparing') {
+                tryStartGame(gameId)
+            } else if (games.get(gameId).status === 'playing' && roomSockets.length === 1) {
+                socket.data.color = roomSockets[0].data.color === WHITE ? BLACK : WHITE
+                socket.emit('continue-game', {
+                    fen: games.get(gameId).chess.fen(),
+                    yourColor: socket.data.color
+                })
+            }
 
             socket.on('prepare-game', async ({ myColor }) => {
                 if (['preparing', 'done'].includes(games.get(gameId).status)) {
@@ -188,11 +195,11 @@ io.on('connection', async (socket) => {
             })
 
             socket.on('disconnect', async (reason) => {
-                // todo:
-                // const sockets = await io.in(room(gameId)).fetchSockets()
-                // if (sockets.length < 2)
-                //     emitStatus('user disconnected')
-                console.log('user disconnected:', reason)
+                console.error('user disconnected:', reason)
+                if ((await io.in(room(gameId)).fetchSockets()).length === 0) {
+                    games.delete(gameId) // stop game
+                    console.info('stop game', gameId)
+                }
             })
         } else {
             socket.disconnect()

@@ -1,13 +1,15 @@
 <script lang="ts">
   import NewGameDialog from './NewGameDialog.svelte';
-  import { onMount } from 'svelte';
+  import { onMount, tick } from 'svelte';
   import { io, Socket } from 'socket.io-client';
   import Gamefield from './Gamefield.svelte';
   import { Game, game } from './game';
+  import type { Color } from 'chess.js';
 
   let socket: Socket;
 
   let newGameDialog: NewGameDialog;
+  let reload = false;
 
   onMount(() => {
     if (gameId?.length !== 36) {
@@ -17,11 +19,22 @@
     } else {
       socket = io({ query: { gameId } });
 
+      socket.on('continue-game', ({ fen, yourColor }: { fen: string; yourColor: Color }) => {
+        newGameDialog.close();
+        $game = new Game(yourColor, socket);
+        $game.chess.load(fen);
+        $game = $game;
+      });
+
       newGameDialog.show();
 
       socket.on('start-game', ({ yourColor }) => {
         newGameDialog.close();
-        $game = new Game(yourColor, socket);
+        reload = true;
+        tick().then(() => {
+          $game = new Game(yourColor, socket);
+          reload = false;
+        });
       });
     }
   });
@@ -39,6 +52,6 @@
     socket.emit('prepare-game', { myColor: detail });
   }}
 />
-{#if $game}
+{#if $game && !reload}
   <Gamefield on:new-game={newGame} />
 {/if}
