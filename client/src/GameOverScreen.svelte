@@ -83,4 +83,12 @@
             background-position: 0 0;
         }
     }
+
+    @media screen and (max-width: 500px) {
+        .shadow,
+        .shadow:before,
+        .shadow:after {
+            border-radius: 0;
+        }
+    }
 </style>

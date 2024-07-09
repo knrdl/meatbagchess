@@ -162,11 +162,13 @@
 
     @media screen and (max-width: 500px) {
         .board {
-            gap: 0.1rem;
+            gap: 0;
         }
 
         .board > .square {
-            background-size: 125%;
+            background-size: 120%;
+            border-radius: 0;
+            border: none;
         }
 
         .board > .square > .move-target {
