@@ -17,6 +17,8 @@
         possibleMoves: Square[];
     } | null = null;
 
+    let lastMove: { from: Square; to: Square } | null = null;
+
     function getSquareInfo(x: number, y: number, ...rest: any[]) {
         const rank = $game.ourColor === 'w' ? ranks[7 - y] : ranks[y];
         const file = $game.ourColor === 'w' ? files[x] : files[7 - x];
@@ -43,7 +45,9 @@
 
             if (isPromotion) promotionDialog.show(square);
             else {
-                dispatch('move', { from: selectedPiece!.square, to: square });
+                const move = { from: selectedPiece!.square, to: square };
+                dispatch('move', move);
+                lastMove = move;
                 selectedPiece = null;
             }
         } else if (selectedPiece) {
@@ -73,6 +77,7 @@
                 type="button"
                 class="square {$game.chess.squareColor(square)}"
                 class:check={isCheck}
+                class:last-move={lastMove?.from === square || lastMove?.to === square}
                 class:selected={isSelected}
                 class:selectable={isSelectable}
                 style={piece ? `background-image: url('${getPieceImage(piece)}')` : 'background-image: none'}
@@ -146,6 +151,10 @@
 
     .board > .square.check {
         box-shadow: inset 0 0 20px red;
+    }
+
+    .board > .square.last-move {
+        box-shadow: inset 0 0 20px #0007;
     }
 
     @media screen and (max-width: 500px) {
