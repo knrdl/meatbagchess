@@ -21,6 +21,7 @@
 
       socket.on('continue-game', ({ fen, yourColor }: { fen: string; yourColor: Color }) => {
         newGameDialog.close();
+        $game?.stop()
         $game = new Game(yourColor, socket);
         $game.chess.load(fen);
         $game = $game;
@@ -31,6 +32,7 @@
       socket.on('start-game', ({ yourColor }) => {
         newGameDialog.close();
         reload = true;
+        $game?.stop()
         tick().then(() => {
           $game = new Game(yourColor, socket);
           reload = false;

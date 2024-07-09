@@ -8,17 +8,22 @@ export const game = writable<Game>()
 
 export class Game {
 
-    readonly chess = new Chess()
+    readonly chess
 
-    public status: GameStatus = 'playing'
-    public captures: { [key in Color]: PieceSymbol[] } = { b: [], w: [] }
+    public status: GameStatus
+    public captures: { [key in Color]: PieceSymbol[] }
 
     public hasDrawOffer = false
     public hasUndoRequest = false
 
-    public elapsedTime: { [key in Color]: number | null } = { w: null, b: null }
+    public elapsedTime: { [key in Color]: number | null }
 
     constructor(public ourColor: Color, private socket: Socket) {
+
+        this.chess = new Chess()
+        this.status = 'playing'
+        this.captures = { b: [], w: [] }
+        this.elapsedTime = { w: null, b: null }
 
         socket.on('move', ({ from, to, promotion }) => {
             const currentTurn = this.chess.turn()
@@ -111,6 +116,12 @@ export class Game {
         this.socket.emit('reject-undo')
         this.hasUndoRequest = false
         game.set(this)
+    }
+
+    stop() {
+        for (const event of ['move', 'status-update', 'clock-sync', 'draw-offer', 'undo-request', 'undo',]) {
+            this.socket.off(event)
+        }
     }
 
 
