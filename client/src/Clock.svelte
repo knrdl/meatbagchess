@@ -18,7 +18,10 @@
 
     $: if (elapsedTime !== null && handle === null) {
         handle = setInterval(() => {
-            if ($game.chess.turn() === color) {
+            if ($game.status !== 'playing' && handle !== null) {
+                clearInterval(handle);
+                handle = null;
+            } else if ($game.chess.turn() === color) {
                 elapsedTime!++;
             }
         }, 1000);
