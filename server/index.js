@@ -102,6 +102,7 @@ io.on('connection', async (socket) => {
                         }
                     })()
                     if (move) {
+                        updateGame(gameId, { drawOfferBy: undefined, undoRequestBy: undefined })
                         if (!games.get(gameId).clock.stamps[socket.data.color]) {
                             games.get(gameId).clock.elapsed[socket.data.color] = 0
                             games.get(gameId).clock.stamps[socket.data.color] = epoch()

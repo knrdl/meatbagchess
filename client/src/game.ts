@@ -27,6 +27,8 @@ export class Game {
         this.elapsedTime = { w: null, b: null }
 
         socket.on('move', ({ from, to, promotion }) => {
+            this.hasDrawOffer = false
+            this.hasUndoRequest = false
             const currentTurn = this.chess.turn()
             const result = this.chess.move({ from, to, promotion })
             if (result.captured) {
