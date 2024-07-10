@@ -86,12 +86,12 @@
                 on:click={() => selectSquare(square)}
             >
                 {#if x === 0}
-                    <div style="position: absolute; left:.1rem;top:-.1rem">
+                    <div style="position: absolute; left:.1rem;top:-.1rem" class="text-border">
                         {rank}
                     </div>
                 {/if}
                 {#if y === 7}
-                    <div style="position: absolute; right:.1rem;bottom:-.1rem">
+                    <div style="position: absolute; right:.1rem;bottom:-.1rem" class="text-border">
                         {file}
                     </div>
                 {/if}
@@ -158,6 +158,14 @@
 
     .board > .square.last-move {
         box-shadow: inset 0 0 20px #0007;
+    }
+
+    .text-border {
+        text-shadow:
+            -1px 0 black,
+            0 1px black,
+            1px 0 black,
+            0 -1px black;
     }
 
     @media screen and (max-width: 500px) {
