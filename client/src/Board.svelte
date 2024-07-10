@@ -33,18 +33,16 @@
     function setSelectedPiece(square: Square) {
         selectedPiece = {
             square,
-            possibleMoves: $game.chess.moves({ square, verbose: true }).map((move) => move.to),
+            possibleMoves: $game.getPossibleMoves(square),
         };
     }
 
     function selectSquare(square: Square) {
-        const piece = $game.chess.get(square);
-
         if (selectedPiece?.square === square) {
             selectedPiece = null;
-        } else if (piece.color === $game.ourColor) {
+        } else if ($game.chess.get(square).color === $game.ourColor) {
             setSelectedPiece(square);
-        } else if (selectedPiece?.possibleMoves.includes(square)) {
+        } else if ($game.chess.turn() === $game.ourColor && selectedPiece?.possibleMoves.includes(square)) {
             const isPromotion = $game.chess
                 .moves({ square: selectedPiece.square, verbose: true })
                 .filter((move) => move.to === square)
@@ -80,9 +78,10 @@
 
         audioMove.play();
 
-        if ($game.lastMove.piece.color === $game.theirColor) {
+        if ($game.chess.turn() === $game.ourColor) {
             // update possible moves
-            if (selectedPiece) setSelectedPiece(selectedPiece.square);
+            if (selectedPiece && $game.chess.get(selectedPiece.square).color === $game.ourColor) setSelectedPiece(selectedPiece.square);
+            else selectedPiece = null;
         }
 
         animationLastMove = null;
@@ -154,7 +153,12 @@
                     </div>
                 {/if}
                 {#if selectedPiece?.possibleMoves.includes(square)}
-                    <div class="move-target"></div>
+                    <div
+                        class="move-target
+                    {$game.chess.turn() === $game.ourColor ? 'our-turn' : 'their-turn'}
+                    {piece.color === $game.theirColor ? 'attack' : ''}
+                    "
+                    ></div>
                 {/if}
             </button>
         {/each}
@@ -198,8 +202,25 @@
         border-radius: 100%;
         width: 2rem;
         height: 2rem;
-        background-color: rgba(100, 83, 108, 0.66);
-        filter: drop-shadow(0 0 2em rgba(100, 108, 255, 0.667));
+    }
+
+    .board > .square > .move-target.our-turn {
+        box-shadow: 0px 0px 10px rgba(162, 30, 135, 0.5);
+        background-color: rgba(162, 30, 135, 0.5);
+    }
+
+    .board > .square > .move-target.our-turn.attack {
+        box-shadow: 0px 0px 10px rgba(255, 70, 9, 0.667);
+        background-color: rgba(255, 70, 9, 0.8);
+    }
+
+    .board > .square > .move-target.their-turn {
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.667);
+    }
+
+    .board > .square > .move-target.their-turn.attack {
+        border: 1px solid #0007;
+        background-color: rgba(250, 100, 100, 0.75);
     }
 
     .board > .square.selected {
