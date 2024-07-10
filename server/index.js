@@ -120,7 +120,7 @@ io.on('connection', async (socket) => {
                             if (chess.isInsufficientMaterial()) emitStatus('draw by insufficient material')
                             else if (chess.isStalemate()) emitStatus('draw by stalemate')
                             else if (chess.isThreefoldRepetition()) emitStatus('draw by threefold repetition')
-                            else if (chess.isCheckmate()) emitStatus((chess.turn() === WHITE ? 'white' : 'black') + ' wins')
+                            else if (chess.isCheckmate()) emitStatus((chess.turn() === WHITE ? 'black' : 'white') + ' wins')
                         }
                     }
                 }
