@@ -1,4 +1,4 @@
-import { BLACK, Chess, WHITE, type Color, type PieceSymbol, type Square } from "chess.js"
+import { BLACK, Chess, WHITE, type Color, type Piece, type PieceSymbol, type Square } from "chess.js"
 import type { Socket } from "socket.io-client"
 import { writable } from "svelte/store"
 
@@ -17,6 +17,7 @@ export class Game {
     public hasUndoRequest = false
 
     public elapsedTime: { [key in Color]: number | null }
+    public lastMove: { from: Square, to: Square, piece: Piece } | null = null
 
     constructor(public ourColor: Color, private socket: Socket) {
 
@@ -31,6 +32,7 @@ export class Game {
             if (result.captured) {
                 this.captures[currentTurn].push(result.captured)
             }
+            this.lastMove = { from, to, piece: { color: result.color, type: result.piece } }
             game.set(this)
         })
 

@@ -2,8 +2,8 @@
     import { KING, type PieceSymbol, type Square } from 'chess.js';
     import { getPieceImage } from './lib/chesspieces';
     import PromotionDialog from './PromotionDialog.svelte';
-    import { createEventDispatcher } from 'svelte';
-    import { game } from './game';
+    import { createEventDispatcher, tick } from 'svelte';
+    import { Game, game } from './game';
 
     const dispatch = createEventDispatcher<{ move: { from: Square; to: Square; promotion?: PieceSymbol } }>();
 
@@ -17,7 +17,11 @@
         possibleMoves: Square[];
     } | null = null;
 
-    let lastMove: { from: Square; to: Square } | null = null;
+    let squares: Partial<Record<Square, HTMLButtonElement>> = {};
+
+    let ourLastMove: { from: Square; to: Square } | null = null;
+    let gameLastMove: Game['lastMove'];
+    let animationLastMove: Game['lastMove'];
 
     function getSquareInfo(x: number, y: number, ...rest: any[]) {
         const rank = $game.ourColor === 'w' ? ranks[7 - y] : ranks[y];
@@ -27,16 +31,20 @@
         return { rank, file, square, piece };
     }
 
+    function setSelectedPiece(square: Square) {
+        selectedPiece = {
+            square,
+            possibleMoves: $game.chess.moves({ square, verbose: true }).map((move) => move.to),
+        };
+    }
+
     function selectSquare(square: Square) {
         const piece = $game.chess.get(square);
 
         if (selectedPiece?.square === square) {
             selectedPiece = null;
         } else if (piece.color === $game.ourColor) {
-            selectedPiece = {
-                square,
-                possibleMoves: $game.chess.moves({ square, verbose: true }).map((move) => move.to),
-            };
+            setSelectedPiece(square);
         } else if (selectedPiece?.possibleMoves.includes(square)) {
             const isPromotion = $game.chess
                 .moves({ square: selectedPiece.square, verbose: true })
@@ -47,7 +55,7 @@
             else {
                 const move = { from: selectedPiece!.square, to: square };
                 dispatch('move', move);
-                lastMove = move;
+                ourLastMove = move;
                 selectedPiece = null;
             }
         } else if (selectedPiece) {
@@ -58,12 +66,55 @@
     function handlePromotion({ type, target }: { type: PieceSymbol; target: Square }) {
         const move = { from: selectedPiece!.square, to: target };
         dispatch('move', { ...move, promotion: type });
-        lastMove = move;
+        ourLastMove = move;
         selectedPiece = null;
+    }
+
+    let handle: number | null = null;
+    $: if ($game.lastMove && $game.lastMove !== gameLastMove) {
+        gameLastMove = $game.lastMove;
+
+        if ($game.lastMove.piece.color === $game.theirColor) {
+            // update possible moves
+            if (selectedPiece) setSelectedPiece(selectedPiece.square);
+        }
+
+        animationLastMove = null;
+        tick().then(() => (animationLastMove = gameLastMove));
+        if (handle !== null) clearTimeout(handle);
+        handle = setTimeout(() => (animationLastMove = null), 500);
     }
 </script>
 
 <PromotionDialog bind:this={promotionDialog} color={$game.ourColor} on:promote={({ detail }) => handlePromotion(detail)} />
+
+{#if animationLastMove}
+    {@const fromRect = squares[animationLastMove.from]?.getBoundingClientRect()}
+    {@const toRect = squares[animationLastMove.to]?.getBoundingClientRect()}
+    {#if fromRect && toRect}
+        <img
+            src={getPieceImage(animationLastMove.piece)}
+            alt="Piece"
+            style="
+            --x1: {fromRect.x}px;
+            --y1: {fromRect.y}px;
+            --x2: {toRect.x}px;
+            --y2: {toRect.y}px;
+            position: fixed;
+            z-index: 10;
+            opacity: 0;
+            width: {fromRect.width * 1}px;
+            height: {fromRect.height * 1}px;
+            left: 0;
+            top: 0;
+            animation-name: piecemove;
+            animation-duration: 500ms;
+            animation-iteration-count: 1;
+            animation-timing-function: ease-in-out;
+"
+        />
+    {/if}
+{/if}
 
 <div class="board">
     {#each [0, 1, 2, 3, 4, 5, 6, 7] as y}
@@ -76,13 +127,14 @@
                 $game.chess.isCheck() &&
                 (($game.chess.turn() === $game.ourColor && piece.color === $game.ourColor) || ($game.chess.turn() !== $game.ourColor && piece.color !== $game.ourColor))}
             <button
+                bind:this={squares[square]}
                 type="button"
                 class="square {$game.chess.squareColor(square)}"
                 class:check={isCheck}
-                class:last-move={lastMove?.from === square || lastMove?.to === square}
+                class:last-move={ourLastMove?.from === square || ourLastMove?.to === square}
                 class:selected={isSelected}
                 class:selectable={isSelectable}
-                style={piece ? `background-image: url('${getPieceImage(piece)}')` : 'background-image: none'}
+                style={piece && animationLastMove?.to !== square ? `background-image: url('${getPieceImage(piece)}')` : 'background-image: none'}
                 on:click={() => selectSquare(square)}
             >
                 {#if x === 0}
@@ -146,6 +198,7 @@
 
     .board > .square.selected {
         box-shadow: inset 0 0 20px #f8a100cc;
+        background-size: 110%;
     }
 
     .board > .square:not(.selectable) {
