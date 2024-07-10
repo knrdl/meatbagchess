@@ -1,6 +1,15 @@
 <script lang="ts">
     import { slide } from 'svelte/transition';
     import { game } from './game';
+    import beep from './lib/beep.wav';
+
+    const audioMove = new Audio(beep);
+    audioMove.playbackRate = 0.3;
+    audioMove.volume = 0.5;
+
+    $: if ($game.hasDrawOffer || $game.hasUndoRequest) {
+        audioMove.play();
+    }
 </script>
 
 {#if $game.hasDrawOffer}

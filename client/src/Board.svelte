@@ -2,10 +2,9 @@
     import { KING, type PieceSymbol, type Square } from 'chess.js';
     import { getPieceImage } from './lib/chesspieces';
     import PromotionDialog from './PromotionDialog.svelte';
-    import { createEventDispatcher, tick } from 'svelte';
+    import { tick } from 'svelte';
     import { Game, game } from './game';
-
-    const dispatch = createEventDispatcher<{ move: { from: Square; to: Square; promotion?: PieceSymbol } }>();
+    import beep from './lib/beep.wav';
 
     const files = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
     const ranks = [1, 2, 3, 4, 5, 6, 7, 8];
@@ -54,7 +53,7 @@
             if (isPromotion) promotionDialog.show(square);
             else {
                 const move = { from: selectedPiece!.square, to: square };
-                dispatch('move', move);
+                $game.move(move);
                 ourLastMove = move;
                 selectedPiece = null;
             }
@@ -65,14 +64,21 @@
 
     function handlePromotion({ type, target }: { type: PieceSymbol; target: Square }) {
         const move = { from: selectedPiece!.square, to: target };
-        dispatch('move', { ...move, promotion: type });
+        $game.move({ ...move, promotion: type });
         ourLastMove = move;
         selectedPiece = null;
     }
 
+    const audioMove = new Audio(beep);
+    audioMove.playbackRate = 1.2;
+    audioMove.volume = 0.5;
+
+    const animationDuration = 250;
     let handle: number | null = null;
     $: if ($game.lastMove && $game.lastMove !== gameLastMove) {
         gameLastMove = $game.lastMove;
+
+        audioMove.play();
 
         if ($game.lastMove.piece.color === $game.theirColor) {
             // update possible moves
@@ -82,7 +88,7 @@
         animationLastMove = null;
         tick().then(() => (animationLastMove = gameLastMove));
         if (handle !== null) clearTimeout(handle);
-        handle = setTimeout(() => (animationLastMove = null), 500);
+        handle = setTimeout(() => (animationLastMove = null), animationDuration);
     }
 </script>
 
@@ -108,7 +114,7 @@
             left: 0;
             top: 0;
             animation-name: piecemove;
-            animation-duration: 500ms;
+            animation-duration: {animationDuration}ms;
             animation-iteration-count: 1;
             animation-timing-function: ease-in-out;
 "

@@ -1,6 +1,4 @@
 <script lang="ts">
-  import { type Square, type PieceSymbol } from 'chess.js';
-  import audioclipMove from './lib/move.mp3';
   import Captures from './Captures.svelte';
   import Actions from './Actions.svelte';
   import Clock from './Clock.svelte';
@@ -11,13 +9,6 @@
   import { createEventDispatcher } from 'svelte';
 
   const dispatch = createEventDispatcher<{ 'new-game': void }>();
-
-  const audioMove = new Audio(audioclipMove);
-
-  function doMove({ from, to, promotion }: { from: Square; to: Square; promotion?: PieceSymbol }) {
-    audioMove.play();
-    $game.move({ from, to, promotion });
-  }
 </script>
 
 {#if $game.status === 'playing'}
@@ -34,7 +25,7 @@
       <Clock color={$game.theirColor} />
     </section>
     <section style="position: relative" class="board-container">
-      <Board on:move={({ detail }) => doMove(detail)} />
+      <Board />
       {#if $game.status !== 'playing'}
         <GameOverScreen on:click={() => dispatch('new-game')} />
       {/if}
