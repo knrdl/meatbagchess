@@ -153,12 +153,7 @@
                     </div>
                 {/if}
                 {#if selectedPiece?.possibleMoves.includes(square)}
-                    <div
-                        class="move-target
-                    {$game.chess.turn() === $game.ourColor ? 'our-turn' : 'their-turn'}
-                    {piece.color === $game.theirColor ? 'attack' : ''}
-                    "
-                    ></div>
+                    <div class="move-target {$game.chess.turn() === $game.ourColor ? 'our-turn' : 'their-turn'}" class:attack={piece.color === $game.theirColor}></div>
                 {/if}
             </button>
         {/each}

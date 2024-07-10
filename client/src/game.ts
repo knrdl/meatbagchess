@@ -82,6 +82,18 @@ export class Game {
         return this.ourColor === WHITE ? 'black' : 'white'
     }
 
+    getPossibleMoves(square: Square) {
+        if (this.chess.turn() === this.ourColor) {
+            return this.chess.moves({ square, verbose: true }).map((move) => move.to)
+        } else {
+            const tokens = this.chess.fen().split(' ')
+            tokens[1] = this.theirColor
+            tokens[1] = tokens[1] === WHITE ? BLACK : WHITE
+            const fakeGame = new Chess(tokens.join(' '))
+            return fakeGame.moves({ square, verbose: true }).map((move) => move.to)
+        }
+    }
+
     resign() {
         this.socket.emit('resign')
     }
