@@ -31,6 +31,14 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
+
+  --pattern-color: #6661;
+  background-image: repeating-linear-gradient(45deg, var(--pattern-color) 25%, transparent 25%, transparent 75%, var(--pattern-color) 75%, var(--pattern-color)),
+    repeating-linear-gradient(45deg, var(--pattern-color) 25%, transparent 25%, transparent 75%, var(--pattern-color) 75%, var(--pattern-color));
+  background-position:
+    0 0,
+    28px 28px;
+  background-size: 56px 56px;
 }
 
 #app {
@@ -94,7 +102,7 @@ dialog::backdrop {
   99.999% {
     transform:
       translateX(var(--x2)) translateY(var(--y2));
-      opacity: 1;
+    opacity: 1;
   }
 
   100% {
