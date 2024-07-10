@@ -2,7 +2,7 @@ import { BLACK, Chess, WHITE, type Color, type PieceSymbol, type Square } from "
 import type { Socket } from "socket.io-client"
 import { writable } from "svelte/store"
 
-export type GameStatus = 'playing' | 'white resigns' | 'black resigns' | 'draw by agreement' | 'draw by stalemate' | 'draw by threefold repetition' | 'draw by insufficient material' | 'white wins' | 'black wins' | 'user disconnected'
+export type GameStatus = 'playing' | 'white resigns' | 'black resigns' | 'draw by agreement' | 'draw by stalemate' | 'draw by threefold repetition' | 'draw by insufficient material' | 'white wins' | 'black wins'
 
 export const game = writable<Game>()
 

@@ -8,7 +8,7 @@
     class="gameover shadow"
     class:green={$game.status === $game.ourColorLong + ' wins' || $game.status === $game.theirColorLong + ' resigns'}
     class:red={$game.status === $game.theirColorLong + ' wins' || $game.status === $game.ourColorLong + ' resigns'}
-    class:yellow={$game.status.startsWith('draw') || $game.status === 'user disconnected'}
+    class:yellow={$game.status.startsWith('draw')}
     transition:fade
     on:click
 >
