@@ -2,9 +2,8 @@
     import { KING, WHITE, type PieceSymbol, type Square } from 'chess.js';
     import { getPieceImage } from './lib/chesspieces';
     import PromotionDialog from './PromotionDialog.svelte';
-    import { tick } from 'svelte';
     import { Game, game } from './game';
-    import beep from './lib/beep.wav';
+    import PieceAnimation from './lib/chesspieces/PieceAnimation.svelte';
 
     const files = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
     const ranks = [1, 2, 3, 4, 5, 6, 7, 8];
@@ -20,7 +19,8 @@
 
     let ourLastMove: { from: Square; to: Square } | null = null;
     let gameLastMove: Game['lastMove'];
-    let animationLastMove: Game['lastMove'];
+
+    let pieceAnimation: PieceAnimation;
 
     function getSquareInfo(x: number, y: number, ...rest: any[]) {
         const rank = $game.ourColor === WHITE ? ranks[7 - y] : ranks[y];
@@ -76,42 +76,13 @@
             else selectedPiece = null;
         }
 
-        animationLastMove = null;
-        tick().then(() => (animationLastMove = gameLastMove));
-        if (handle !== null) clearTimeout(handle);
-        handle = setTimeout(() => (animationLastMove = null), animationDuration);
+        pieceAnimation.animate(gameLastMove);
     }
 </script>
 
 <PromotionDialog bind:this={promotionDialog} color={$game.ourColor} on:promote={({ detail }) => handlePromotion(detail)} />
 
-{#if animationLastMove}
-    {@const fromRect = squares[animationLastMove.from]?.getBoundingClientRect()}
-    {@const toRect = squares[animationLastMove.to]?.getBoundingClientRect()}
-    {#if fromRect && toRect}
-        <img
-            src={getPieceImage(animationLastMove.piece)}
-            alt="Piece"
-            style="
-            --x1: {fromRect.x}px;
-            --y1: {fromRect.y}px;
-            --x2: {toRect.x}px;
-            --y2: {toRect.y}px;
-            position: fixed;
-            z-index: 10;
-            opacity: 0;
-            width: {fromRect.width * 1}px;
-            height: {fromRect.height * 1}px;
-            left: 0;
-            top: 0;
-            animation-name: piecemove;
-            animation-duration: {animationDuration}ms;
-            animation-iteration-count: 1;
-            animation-timing-function: ease-in-out;
-"
-        />
-    {/if}
-{/if}
+<PieceAnimation bind:this={pieceAnimation} {squares} on:animate={() => (pieceAnimation = pieceAnimation)} />
 
 <div class="board">
     {#each [0, 1, 2, 3, 4, 5, 6, 7] as y}
@@ -131,7 +102,7 @@
                 class:last-move={ourLastMove?.from === square || ourLastMove?.to === square}
                 class:selected={isSelected}
                 class:selectable={isSelectable}
-                style={piece && animationLastMove?.to !== square ? `background-image: url('${getPieceImage(piece)}')` : 'background-image: none'}
+                style={piece && pieceAnimation?.lastMove?.to !== square ? `background-image: url('${getPieceImage(piece)}')` : 'background-image: none'}
                 on:click={() => selectSquare(square)}
             >
                 {#if x === 0}
