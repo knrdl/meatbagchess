@@ -72,6 +72,7 @@ io.on('connection', async (socket) => {
                     fen: games.get(gameId).chess.fen(),
                     yourColor: socket.data.color
                 })
+                socket.emit('clock-sync', games.get(gameId).clock.elapsed)
             }
 
             socket.on('prepare-game', async ({ myColor }) => {
