@@ -1,17 +1,8 @@
 <script lang="ts">
-    import { fade } from 'svelte/transition';
     import { game } from './game';
 </script>
 
-<button
-    type="button"
-    class="gameover shadow"
-    class:green={$game.status === $game.ourColorLong + ' wins' || $game.status === $game.theirColorLong + ' resigns'}
-    class:red={$game.status === $game.theirColorLong + ' wins' || $game.status === $game.ourColorLong + ' resigns'}
-    class:yellow={$game.status.startsWith('draw')}
-    transition:fade
-    on:click
->
+<button type="button" class="gameover shadow" class:green={$game.isWon} class:red={$game.isLost} class:yellow={$game.isDraw} on:click>
     {$game.status}
 </button>
 
