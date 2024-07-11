@@ -67,16 +67,8 @@
         selectedPiece = null;
     }
 
-    const audioMove = new Audio(beep);
-    audioMove.playbackRate = 1.2;
-    audioMove.volume = 0.5;
-
-    const animationDuration = 250;
-    let handle: number | null = null;
     $: if ($game.lastMove && $game.lastMove !== gameLastMove) {
         gameLastMove = $game.lastMove;
-
-        audioMove.play();
 
         if ($game.chess.turn() === $game.ourColor) {
             // update possible moves

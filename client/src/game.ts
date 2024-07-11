@@ -1,6 +1,7 @@
 import { BLACK, Chess, WHITE, type Color, type Piece, type PieceSymbol, type Square } from "chess.js"
 import type { Socket } from "socket.io-client"
 import { writable } from "svelte/store"
+import { playSound, stopSound } from "./lib/sounds"
 
 export type GameStatus = 'playing' | 'white resigns' | 'black resigns' | 'draw by agreement' | 'draw by stalemate' | 'draw by threefold repetition' | 'draw by insufficient material' | 'white wins' | 'black wins'
 
@@ -23,8 +24,8 @@ export class Game {
 
         this.chess = new Chess()
         this.status = 'playing'
-        this.captures = { b: [], w: [] }
-        this.elapsedTime = { w: null, b: null }
+        this.captures = { [BLACK]: [], [WHITE]: [] }
+        this.elapsedTime = { [BLACK]: null, [WHITE]: null }
 
         socket.on('move', ({ from, to, promotion }) => {
             this.hasDrawOffer = false
@@ -35,11 +36,22 @@ export class Game {
                 this.captures[currentTurn].push(result.captured)
             }
             this.lastMove = { from, to, piece: { color: result.color, type: result.piece } }
+
+            if (this.chess.inCheck())
+                playSound('check')
+            else if (result.captured)
+                playSound('capture')
+            else
+                playSound(this.chess.turn() === this.ourColor ? 'theirMove' : 'ourMove')
+
             game.set(this)
         })
 
         socket.on('status-update', status => {
             this.status = status
+            if (this.isWon) playSound('win')
+            else if (this.isLost) playSound('lose')
+            else if (this.isDraw) playSound('draw')
             game.set(this)
         })
 
@@ -49,16 +61,19 @@ export class Game {
         })
 
         socket.on('draw-offer', () => {
+            playSound('offer')
             this.hasDrawOffer = true
             game.set(this)
         })
 
         socket.on('undo-request', () => {
+            playSound('offer')
             this.hasUndoRequest = true
             game.set(this)
         })
 
         socket.on('undo', ({ turns }: { turns: number }) => {
+            playSound('undo')
             for (let i = 0; i < turns; i++) {
                 const move = this.chess.undo()
                 if (move?.captured) {
@@ -82,6 +97,17 @@ export class Game {
         return this.ourColor === WHITE ? 'black' : 'white'
     }
 
+    get isWon() {
+        return this.status === this.ourColorLong + ' wins' || this.status === this.theirColorLong + ' resigns'
+    }
+
+    get isLost() {
+        return this.status === this.theirColorLong + ' wins' || this.status === this.ourColorLong + ' resigns'
+    }
+    get isDraw() {
+        return this.status.startsWith('draw')
+    }
+
     getPossibleMoves(square: Square) {
         if (this.chess.turn() === this.ourColor) {
             return this.chess.moves({ square, verbose: true }).map((move) => move.to)
@@ -103,32 +129,38 @@ export class Game {
     }
 
     offerDraw() {
+        playSound('offer')
         this.socket.emit('offer-draw')
     }
 
     rejectDraw() {
+        stopSound('offer')
         this.socket.emit('reject-draw')
         this.hasDrawOffer = false
         game.set(this)
     }
 
     acceptDraw() {
+        stopSound('offer')
         this.socket.emit('accept-draw')
         this.hasDrawOffer = false
         game.set(this)
     }
 
     requestUndo() {
+        playSound('offer')
         this.socket.emit('request-undo')
     }
 
     acceptUndo() {
+        stopSound('offer')
         this.socket.emit('accept-undo')
         this.hasUndoRequest = false
         game.set(this)
     }
 
     rejectUndo() {
+        stopSound('offer')
         this.socket.emit('reject-undo')
         this.hasUndoRequest = false
         game.set(this)
