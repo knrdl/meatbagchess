@@ -4,7 +4,7 @@
   import { io, Socket } from 'socket.io-client';
   import Gamefield from './Gamefield.svelte';
   import { Game, game } from './game';
-  import type { Color } from 'chess.js';
+  import { WHITE, type Color } from 'chess.js';
 
   let socket: Socket;
 
@@ -18,7 +18,7 @@
       window.location.search = params.toString();
     } else {
       socket = io({ query: { gameId } });
-      $game = new Game('w', socket); // show an empty game as background of the new game dialog
+      $game = new Game(WHITE, socket); // show an empty game as background of the new game dialog
 
       socket.on('continue-game', ({ fen, yourColor }: { fen: string; yourColor: Color }) => {
         newGameDialog.close();

@@ -15,7 +15,7 @@ const io = new Server(server)
  *  chess?: Chess, 
  *  drawOfferBy?: Color,
  *  undoRequestBy?: Color,
- *  clock?: {elapsed: {w: number|null, b: number|null}, stamps: {w?: number, b?: number}}
+ *  clock?: {elapsed: {[WHITE]: number|null, [BLACK]: number|null}, stamps: {[WHITE]?: number, [BLACK]?: number}}
  * }>}
 */
 const games = new Map()
@@ -42,7 +42,7 @@ async function tryStartGame(gameId) {
             const otherSocket = sockets.find(socket => socket !== readySocket)
             otherSocket.data.color = (readySocket.data.color === WHITE ? BLACK : WHITE)
 
-            updateGame(gameId, { status: 'playing', chess: new Chess(), clock: { elapsed: { w: null, b: null }, stamps: {} } })
+            updateGame(gameId, { status: 'playing', chess: new Chess(), clock: { elapsed: { [WHITE]: null, [BLACK]: null }, stamps: {} } })
 
             sockets.forEach(socket => {
                 socket.emit('start-game', { yourColor: socket.data.color })

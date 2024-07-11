@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { KING, type PieceSymbol, type Square } from 'chess.js';
+    import { KING, WHITE, type PieceSymbol, type Square } from 'chess.js';
     import { getPieceImage } from './lib/chesspieces';
     import PromotionDialog from './PromotionDialog.svelte';
     import { tick } from 'svelte';
@@ -23,8 +23,8 @@
     let animationLastMove: Game['lastMove'];
 
     function getSquareInfo(x: number, y: number, ...rest: any[]) {
-        const rank = $game.ourColor === 'w' ? ranks[7 - y] : ranks[y];
-        const file = $game.ourColor === 'w' ? files[x] : files[7 - x];
+        const rank = $game.ourColor === WHITE ? ranks[7 - y] : ranks[y];
+        const file = $game.ourColor === WHITE ? files[x] : files[7 - x];
         const square = (file.toLowerCase() + rank.toString()) as Square;
         const piece = $game.chess.get(square);
         return { rank, file, square, piece };

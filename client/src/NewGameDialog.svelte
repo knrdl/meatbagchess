@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { type Color } from 'chess.js';
+    import { BLACK, KING, WHITE, type Color } from 'chess.js';
     import { createEventDispatcher } from 'svelte';
     import PieceImg from './lib/chesspieces/PieceImg.svelte';
     import shareImg from './lib/share.png';
@@ -57,27 +57,27 @@
             type="button"
             on:click={() => {
                 isWaiting = true;
-                dispatch('create', 'w');
+                dispatch('create', WHITE);
             }}
         >
-            <PieceImg color="w" type="k" />
+            <PieceImg color={WHITE} type={KING} />
         </button>
         <button
             type="button"
             on:click={() => {
                 isWaiting = true;
-                dispatch('create', Math.random() >= 0.5 ? 'b' : 'w');
+                dispatch('create', Math.random() >= 0.5 ? BLACK : WHITE);
             }}
         >
             <div style="position: relative;">
                 <div style="opacity:0">
-                    <PieceImg color="w" type="k" />
+                    <PieceImg color={WHITE} type={KING} />
                 </div>
                 <div style="position: absolute;left:0;top:0;width:50%;overflow: hidden;">
-                    <PieceImg color="w" type="k" />
+                    <PieceImg color={WHITE} type={KING} />
                 </div>
                 <div style="position: absolute;right:0;top:0;width:50%;transform: rotateY(180deg);overflow: hidden;">
-                    <PieceImg color="b" type="k" />
+                    <PieceImg color={BLACK} type={KING} />
                 </div>
             </div>
         </button>
@@ -85,10 +85,10 @@
             type="button"
             on:click={() => {
                 isWaiting = true;
-                dispatch('create', 'b');
+                dispatch('create', BLACK);
             }}
         >
-            <PieceImg color="b" type="k" />
+            <PieceImg color={BLACK} type={KING} />
         </button>
     </div>
     {#if isWaiting}
