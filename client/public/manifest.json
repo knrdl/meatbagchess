@@ -1,0 +1,15 @@
+{
+    "short_name": "MBC",
+    "name": "Meatbag Chess",
+    "icons": [
+        {
+            "src": "/icon.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ],
+    "start_url": "/",
+    "theme_color": "#a57a60",
+    "background_color": "#222222",
+    "display": "standalone"
+}
