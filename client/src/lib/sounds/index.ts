@@ -30,6 +30,7 @@ export function playSound(type: AudioEvent) {
     currentAudio?.load() // stop
     currentAudio = new Audio(sounds[type])
     currentAudio.dataset.type = type
+    currentAudio.volume = 0.33
     currentAudio.play()
 }
 

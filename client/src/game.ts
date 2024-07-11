@@ -9,13 +9,13 @@ export const game = writable<Game>()
 
 export class Game {
 
-    readonly chess
+    readonly chess: Chess
 
     public status: GameStatus
     public captures: { [key in Color]: PieceSymbol[] }
 
-    public hasDrawOffer = false
-    public hasUndoRequest = false
+    public drawOfferBy: null | 'them' | 'us' = null
+    public undoRequestBy: null | 'them' | 'us' = null
 
     public elapsedTime: { [key in Color]: number | null }
     public lastMove: { from: Square, to: Square, piece: Piece } | null = null
@@ -28,8 +28,8 @@ export class Game {
         this.elapsedTime = { [BLACK]: null, [WHITE]: null }
 
         socket.on('move', ({ from, to, promotion }) => {
-            this.hasDrawOffer = false
-            this.hasUndoRequest = false
+            this.drawOfferBy = null
+            this.undoRequestBy = null
             const currentTurn = this.chess.turn()
             const result = this.chess.move({ from, to, promotion })
             if (result.captured) {
@@ -62,21 +62,35 @@ export class Game {
 
         socket.on('draw-offer', () => {
             playSound('offer')
-            this.hasDrawOffer = true
+            this.drawOfferBy = 'them'
+            game.set(this)
+        })
+
+        socket.on('draw-rejection', () => {
+            this.drawOfferBy = null
             game.set(this)
         })
 
         socket.on('undo-request', () => {
             playSound('offer')
-            this.hasUndoRequest = true
+            this.undoRequestBy = 'them'
+            game.set(this)
+        })
+
+        socket.on('undo-rejection', () => {
+            this.undoRequestBy = null
             game.set(this)
         })
 
         socket.on('undo', ({ turns }: { turns: number }) => {
             playSound('undo')
+            this.undoRequestBy = null
+            this.lastMove = null
             for (let i = 0; i < turns; i++) {
                 const move = this.chess.undo()
-                if (move?.captured) {
+                if (!move) {
+                    console.error('error on undo move', i)
+                } else if (move.captured) {
                     this.captures[move.color].splice(this.captures[move.color].indexOf(move.captured), 1)
                 }
             }
@@ -130,39 +144,43 @@ export class Game {
 
     offerDraw() {
         playSound('offer')
+        this.drawOfferBy = 'us'
         this.socket.emit('offer-draw')
+        game.set(this)
     }
 
     rejectDraw() {
         stopSound('offer')
         this.socket.emit('reject-draw')
-        this.hasDrawOffer = false
+        this.drawOfferBy = null
         game.set(this)
     }
 
     acceptDraw() {
         stopSound('offer')
         this.socket.emit('accept-draw')
-        this.hasDrawOffer = false
+        this.drawOfferBy = null
         game.set(this)
     }
 
     requestUndo() {
         playSound('offer')
+        this.undoRequestBy = 'us'
         this.socket.emit('request-undo')
+        game.set(this)
     }
 
     acceptUndo() {
         stopSound('offer')
         this.socket.emit('accept-undo')
-        this.hasUndoRequest = false
+        this.undoRequestBy = null
         game.set(this)
     }
 
     rejectUndo() {
         stopSound('offer')
         this.socket.emit('reject-undo')
-        this.hasUndoRequest = false
+        this.undoRequestBy = null
         game.set(this)
     }
 

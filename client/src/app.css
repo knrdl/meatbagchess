@@ -48,6 +48,13 @@ body {
   text-align: center;
 }
 
+@media screen and (max-width: 500px) {
+  #app {
+    padding-left: 0;
+    padding-right: 0;
+  }
+}
+
 button {
   border-radius: 8px;
   border: 3px solid transparent;

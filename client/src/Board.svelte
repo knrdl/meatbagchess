@@ -78,6 +78,10 @@
 
         pieceAnimation.animate(gameLastMove);
     }
+
+    $: if (!$game.lastMove) {
+        ourLastMove = null;
+    }
 </script>
 
 <PromotionDialog bind:this={promotionDialog} color={$game.ourColor} on:promote={({ detail }) => handlePromotion(detail)} />

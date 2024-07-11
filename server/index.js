@@ -60,6 +60,14 @@ io.on('connection', async (socket) => {
 
         const emitStatus = status => io.to(room(gameId)).emit('status-update', status)
 
+        async function emitOpponent(...args) {
+            const sockets = await io.in(room(gameId)).fetchSockets()
+            const theirSocket = sockets.find(sock => sock !== socket)
+            if (theirSocket) {
+                theirSocket.emit(...args)
+            }
+        }
+
         const roomSockets = await io.in(room(gameId)).fetchSockets()
         if (roomSockets.length < 2) {
             socket.join(room(gameId))
@@ -138,11 +146,7 @@ io.on('connection', async (socket) => {
             socket.on('offer-draw', async () => {
                 if (games.get(gameId).status === 'playing') {
                     updateGame(gameId, { drawOfferBy: socket.data.color })
-                    const sockets = await io.in(room(gameId)).fetchSockets()
-                    const theirSocket = sockets.find(sock => sock !== socket)
-                    if (theirSocket) {
-                        theirSocket.emit('draw-offer')
-                    }
+                    emitOpponent('draw-offer')
                 }
             })
 
@@ -159,17 +163,14 @@ io.on('connection', async (socket) => {
             socket.on('reject-draw', () => {
                 if (games.get(gameId).status === 'playing') {
                     updateGame(gameId, { drawOfferBy: undefined })
+                    emitOpponent('draw-rejection')
                 }
             })
 
             socket.on('request-undo', async () => {
                 if (games.get(gameId).status === 'playing') {
                     updateGame(gameId, { undoRequestBy: socket.data.color })
-                    const sockets = await io.in(room(gameId)).fetchSockets()
-                    const theirSocket = sockets.find(sock => sock !== socket)
-                    if (theirSocket) {
-                        theirSocket.emit('undo-request')
-                    }
+                    emitOpponent('undo-request')
                 }
             })
 
@@ -193,6 +194,7 @@ io.on('connection', async (socket) => {
             socket.on('reject-undo', () => {
                 if (games.get(gameId).status === 'playing') {
                     updateGame(gameId, { undoRequestBy: undefined })
+                    emitOpponent('undo-rejection')
                 }
             })
 
