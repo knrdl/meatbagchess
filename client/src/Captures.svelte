@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { BISHOP, KNIGHT, PAWN, QUEEN, ROOK, type Color, type PieceSymbol } from 'chess.js';
+    import { BISHOP, KNIGHT, PAWN, QUEEN, ROOK, KING, WHITE, type PieceSymbol } from 'chess.js';
     import PieceImg from './lib/chesspieces/PieceImg.svelte';
     import { slide } from 'svelte/transition';
     import { game } from './game';
@@ -16,8 +16,8 @@
         {#each order as type}
             {@const count = captures.filter((c) => c === type).length}
             {#if count > 0}
-                <div style="position: relative" class={capturedBy} class:last_capture={captures[captures.length - 1] == type}>
-                    <PieceImg color={capturedBy === 'us' ? $game.theirColor : $game.ourColor} {type} --size="4rem" />
+                <div style="position: relative" class={capturedBy} class:last_capture={captures[captures.length - 1] == type} transition:slide>
+                    <PieceImg color={capturedBy === 'us' ? $game.theirColor : $game.ourColor} {type} --size="var(--piece-size)" />
                     {#if count > 1}
                         <div class="dot">{count}</div>
                     {/if}
@@ -25,9 +25,22 @@
             {/if}
         {/each}
     </div>
+{:else}
+    <div style="visibility: hidden;" aria-hidden="true">
+        <PieceImg color={WHITE} type={KING} --size="var(--piece-size)" />
+    </div>
 {/if}
 
 <style>
+    :root {
+        --piece-size: 4rem;
+    }
+    @media screen and (max-width: 500px) {
+        :root {
+            --piece-size: 3.5rem;
+        }
+    }
+
     .dot {
         position: absolute;
         border-radius: 100%;

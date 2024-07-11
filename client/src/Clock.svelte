@@ -32,6 +32,8 @@
     <div transition:slide>
         {formatTime(elapsedTime)}
     </div>
+{:else}
+    <div style="visibility: hidden;" aria-hidden="true">XX:XX</div>
 {/if}
 
 <style>
