@@ -2,7 +2,7 @@
     import { KING, WHITE, type PieceSymbol, type Square } from 'chess.js';
     import { getPieceImage } from './lib/chesspieces';
     import PromotionDialog from './PromotionDialog.svelte';
-    import { Game, game } from './game';
+    import { game } from './game';
     import PieceAnimation from './lib/chesspieces/PieceAnimation.svelte';
 
     const files = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
@@ -18,7 +18,7 @@
     let squares: Partial<Record<Square, HTMLButtonElement>> = {};
 
     let ourLastMove: { from: Square; to: Square } | null = null;
-    let gameLastMove: Game['lastMove'];
+    let theirLastMove: { from: Square; to: Square } | null = null;
 
     let pieceAnimation: PieceAnimation;
 
@@ -52,7 +52,6 @@
             else {
                 const move = { from: selectedPiece!.square, to: square };
                 $game.move(move);
-                ourLastMove = move;
                 selectedPiece = null;
             }
         } else if (selectedPiece) {
@@ -63,24 +62,20 @@
     function handlePromotion({ type, target }: { type: PieceSymbol; target: Square }) {
         const move = { from: selectedPiece!.square, to: target };
         $game.move({ ...move, promotion: type });
-        ourLastMove = move;
         selectedPiece = null;
     }
 
-    $: if ($game.lastMove && $game.lastMove !== gameLastMove) {
-        gameLastMove = $game.lastMove;
-
+    $: if ($game.lastMove && $game.lastMove !== ourLastMove && $game.lastMove !== theirLastMove) {
         if ($game.chess.turn() === $game.ourColor) {
+            theirLastMove = $game.lastMove;
             // update possible moves
             if (selectedPiece && $game.chess.get(selectedPiece.square).color === $game.ourColor) setSelectedPiece(selectedPiece.square);
             else selectedPiece = null;
+        } else {
+            ourLastMove = $game.lastMove;
         }
 
-        pieceAnimation.animate(gameLastMove);
-    }
-
-    $: if (!$game.lastMove) {
-        ourLastMove = null;
+        pieceAnimation.animate($game.lastMove);
     }
 </script>
 
@@ -103,7 +98,7 @@
                 type="button"
                 class="square {$game.chess.squareColor(square)}"
                 class:check={isCheck}
-                class:last-move={ourLastMove?.from === square || ourLastMove?.to === square}
+                class:last-move={ourLastMove?.from === square || ourLastMove?.to === square || theirLastMove?.from === square || theirLastMove?.to === square}
                 class:selected={isSelected}
                 class:selectable={isSelectable}
                 style={piece && pieceAnimation?.lastMove?.to !== square ? `background-image: url('${getPieceImage(piece)}')` : 'background-image: none'}
@@ -199,7 +194,8 @@
     }
 
     .board > .square.last-move {
-        box-shadow: inset 0 0 20px #0007;
+        box-shadow: inset 0 0 25px #000c;
+        transition: box-shadow 500ms linear;
     }
 
     .text-border {
