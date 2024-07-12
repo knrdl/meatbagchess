@@ -35,7 +35,7 @@
     :root {
         --piece-size: 4rem;
     }
-    @media screen and (max-width: 500px) {
+    @media screen and (max-width: 500px), screen and (max-height: 500px) {
         :root {
             --piece-size: 3.5rem;
         }
@@ -50,6 +50,7 @@
         bottom: 0.5rem;
         width: 1.5rem;
         height: 1.5rem;
+        user-select: none;
     }
 
     .last_capture {

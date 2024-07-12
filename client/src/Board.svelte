@@ -128,8 +128,8 @@
         height: 100%;
         display: grid;
         gap: 0.125rem;
-        grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
-        grid-template-rows: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+        grid-template-columns: repeat(8, 1fr);
+        grid-template-rows: repeat(8, 1fr);
         text-align: left;
     }
 
@@ -194,7 +194,7 @@
     }
 
     .board > .square.last-move {
-        box-shadow: inset 0 0 25px #000c;
+        box-shadow: inset 0 0 25px #000a;
         transition: box-shadow 500ms linear;
     }
 

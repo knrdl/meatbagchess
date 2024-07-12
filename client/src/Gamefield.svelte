@@ -16,24 +16,25 @@
     <Actions />
   </aside>
 {/if}
+
 <main>
   <article class="playfield">
-    <section class="captures">
+    <section style="grid-area: their-captures">
       <Captures capturedBy="them" />
     </section>
-    <section class="clock">
+    <section style="grid-area: their-clock">
       <Clock color={$game.theirColor} />
     </section>
-    <section style="position: relative" class="board-container">
+    <section style="grid-area: board" class="board-container">
       <Board />
       {#if $game.status !== 'playing'}
         <GameOverScreen on:click={() => dispatch('new-game')} />
       {/if}
     </section>
-    <section class="clock">
+    <section style="grid-area: our-clock">
       <Clock color={$game.ourColor} />
     </section>
-    <section class="captures">
+    <section style="grid-area: our-captures">
       <Captures capturedBy="us" />
     </section>
   </article>
@@ -41,18 +42,46 @@
 
 <style>
   .playfield {
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template:
+      'their-captures'
+      'their-clock'
+      'board' max-content
+      'our-clock'
+      'our-captures'
+      / auto;
     justify-content: center;
-    align-items: center;
+    align-content: center;
   }
 
-  .playfield > .captures {
-    max-width: 75%;
+  .playfield > * {
+    justify-self: center;
   }
 
   .board-container {
-    width: min(100%, calc(100vh - 18rem));
+    position: relative;
     aspect-ratio: 1 / 1;
+  }
+
+  @media (orientation: portrait) {
+    .board-container {
+      width: min(100vw, calc(100vh - 18rem));
+    }
+  }
+
+  @media (orientation: landscape) {
+    .playfield {
+      grid-template:
+        'board . their-clock'
+        'board . their-captures'
+        'board . .' max-content
+        'board . our-clock'
+        'board . our-captures'
+        / auto 1rem min-content;
+    }
+    .board-container {
+      width: 100%;
+      height: calc(100vh - 6rem);
+    }
   }
 </style>
