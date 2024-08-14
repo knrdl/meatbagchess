@@ -41,5 +41,6 @@
         font-family: 'Orbitron';
         letter-spacing: 0.125rem;
         font-size: large;
+        min-width: 5rem;
     }
 </style>
