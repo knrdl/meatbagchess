@@ -7,6 +7,7 @@
   import Board from './Board.svelte';
   import { game } from './game';
   import { createEventDispatcher } from 'svelte';
+  import UndoCounter from './UndoCounter.svelte';
 
   const dispatch = createEventDispatcher<{ 'new-game': void }>();
 </script>
@@ -24,6 +25,7 @@
     </section>
     <section style="grid-area: their-clock">
       <Clock color={$game.theirColor} />
+      <UndoCounter color={$game.theirColor} />
     </section>
     <section style="grid-area: board" class="board-container">
       <Board />
@@ -33,6 +35,7 @@
     </section>
     <section style="grid-area: our-clock">
       <Clock color={$game.ourColor} />
+      <UndoCounter color={$game.ourColor} />
     </section>
     <section style="grid-area: our-captures">
       <Captures capturedBy="us" />

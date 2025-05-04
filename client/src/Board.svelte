@@ -40,7 +40,7 @@
     function selectSquare(square: Square) {
         if (selectedPiece?.square === square) {
             selectedPiece = null;
-        } else if ($game.chess.get(square).color === $game.ourColor) {
+        } else if ($game.chess.get(square)?.color === $game.ourColor) {
             setSelectedPiece(square);
         } else if ($game.chess.turn() === $game.ourColor && selectedPiece?.possibleMoves.includes(square)) {
             const isPromotion = $game.chess
@@ -69,7 +69,7 @@
         if ($game.chess.turn() === $game.ourColor) {
             theirLastMove = $game.lastMove;
             // update possible moves
-            if (selectedPiece && $game.chess.get(selectedPiece.square).color === $game.ourColor) setSelectedPiece(selectedPiece.square);
+            if (selectedPiece && $game.chess.get(selectedPiece.square)?.color === $game.ourColor) setSelectedPiece(selectedPiece.square);
             else selectedPiece = null;
         } else {
             ourLastMove = $game.lastMove;
@@ -90,7 +90,7 @@
             {@const isSelected = selectedPiece?.square === square}
             {@const isSelectable = piece?.color === $game.ourColor || selectedPiece?.possibleMoves.includes(square)}
             {@const isCheck =
-                piece.type === KING &&
+                piece?.type === KING &&
                 $game.chess.isCheck() &&
                 (($game.chess.turn() === $game.ourColor && piece.color === $game.ourColor) || ($game.chess.turn() !== $game.ourColor && piece.color !== $game.ourColor))}
             <button
@@ -115,7 +115,7 @@
                     </div>
                 {/if}
                 {#if selectedPiece?.possibleMoves.includes(square)}
-                    <div class="move-target {$game.chess.turn() === $game.ourColor ? 'our-turn' : 'their-turn'}" class:attack={piece.color === $game.theirColor}></div>
+                    <div class="move-target {$game.chess.turn() === $game.ourColor ? 'our-turn' : 'their-turn'}" class:attack={piece?.color === $game.theirColor}></div>
                 {/if}
             </button>
         {/each}

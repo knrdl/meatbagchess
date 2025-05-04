@@ -20,11 +20,19 @@
       socket = io({ query: { gameId } });
       $game = new Game(WHITE, socket); // show an empty game as background of the new game dialog
 
-      socket.on('continue-game', ({ fen, yourColor }: { fen: string; yourColor: Color }) => {
+      socket.on('continue-game', ({ fen, pgn, yourColor }: { fen: string; pgn: string; yourColor: Color }) => {
         newGameDialog.close();
         $game?.stop();
         $game = new Game(yourColor, socket);
-        $game.chess.load(fen);
+        try {
+          $game.chess.loadPgn(pgn);
+        } catch (e) {
+          $game.chess.load(fen);
+        }
+        $game.chess.history({ verbose: true }).forEach((move) => {
+          if (move.captured) $game.captures[move.color].push(move.captured);
+        });
+
         $game = $game;
       });
 

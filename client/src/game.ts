@@ -3,7 +3,7 @@ import type { Socket } from "socket.io-client"
 import { writable } from "svelte/store"
 import { playSound, stopSound } from "./lib/sounds"
 
-export type GameStatus = 'playing' | 'white resigns' | 'black resigns' | 'draw by agreement' | 'draw by stalemate' | 'draw by threefold repetition' | 'draw by insufficient material' | 'white wins' | 'black wins'
+export type GameStatus = 'playing' | 'white resigns' | 'black resigns' | 'draw by agreement' | 'draw by stalemate' | 'draw by threefold repetition' | 'draw by insufficient material' | 'draw by 50 moves' | 'white wins' | 'black wins'
 
 export const game = writable<Game>()
 
@@ -17,6 +17,8 @@ export class Game {
     public drawOfferBy: null | 'them' | 'us' = null
     public undoRequestBy: null | 'them' | 'us' = null
 
+    public undos: { [key in Color]: number }
+
     public elapsedTime: { [key in Color]: number | null }
     public lastMove: { from: Square, to: Square, piece: Piece } | null = null
 
@@ -25,6 +27,7 @@ export class Game {
         this.chess = new Chess()
         this.status = 'playing'
         this.captures = { [BLACK]: [], [WHITE]: [] }
+        this.undos = { [BLACK]: 0, [WHITE]: 0 }
         this.elapsedTime = { [BLACK]: null, [WHITE]: null }
 
         socket.on('move', ({ from, to, promotion }) => {
@@ -94,6 +97,11 @@ export class Game {
                     this.captures[move.color].splice(this.captures[move.color].indexOf(move.captured), 1)
                 }
             }
+            game.set(this)
+        })
+
+        socket.on('undo-count', undos => {
+            this.undos = undos
             game.set(this)
         })
 

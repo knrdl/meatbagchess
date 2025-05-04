@@ -13,9 +13,10 @@ const io = new Server(server)
  * @type {Map<string, {
  *  status: 'preparing' | 'playing' | 'done', 
  *  chess?: Chess, 
- *  drawOfferBy?: Color,
- *  undoRequestBy?: Color,
- *  clock?: {elapsed: {[WHITE]: number|null, [BLACK]: number|null}, stamps: {[WHITE]?: number, [BLACK]?: number}}
+ *  drawOfferBy?: import('chess.js').Color,
+ *  undoRequestBy?: import('chess.js').Color,
+ *  clock?: {elapsed: {[WHITE]: number, [BLACK]: number}, stamps: {[WHITE]: number | null, [BLACK]: number | null}},
+ *  undos?: {[WHITE]: number, [BLACK]: number}
  * }>}
 */
 const games = new Map()
@@ -42,7 +43,12 @@ async function tryStartGame(gameId) {
             const otherSocket = sockets.find(socket => socket !== readySocket)
             otherSocket.data.color = (readySocket.data.color === WHITE ? BLACK : WHITE)
 
-            updateGame(gameId, { status: 'playing', chess: new Chess(), clock: { elapsed: { [WHITE]: null, [BLACK]: null }, stamps: {} } })
+            updateGame(gameId, {
+                status: 'playing',
+                chess: new Chess(),
+                clock: { elapsed: { [WHITE]: 0, [BLACK]: 0 }, stamps: { [WHITE]: null, [BLACK]: null } },
+                undos: { [WHITE]: 0, [BLACK]: 0 }
+            })
 
             sockets.forEach(socket => {
                 socket.emit('start-game', { yourColor: socket.data.color })
@@ -78,9 +84,11 @@ io.on('connection', async (socket) => {
                 socket.data.color = roomSockets[0].data.color === WHITE ? BLACK : WHITE
                 socket.emit('continue-game', {
                     fen: games.get(gameId).chess.fen(),
+                    pgn: games.get(gameId).chess.pgn(),
                     yourColor: socket.data.color
                 })
                 socket.emit('clock-sync', games.get(gameId).clock.elapsed)
+                io.to(room(gameId)).emit('undo-count', games.get(gameId).undos)
             }
 
             socket.on('prepare-game', async ({ myColor }) => {
@@ -112,15 +120,12 @@ io.on('connection', async (socket) => {
                     })()
                     if (move) {
                         updateGame(gameId, { drawOfferBy: undefined, undoRequestBy: undefined })
-                        if (!games.get(gameId).clock.stamps[socket.data.color]) {
-                            games.get(gameId).clock.elapsed[socket.data.color] = 0
-                            games.get(gameId).clock.stamps[socket.data.color] = epoch()
-                        } else {
-                            const now = epoch()
-                            const theirColor = socket.data.color === WHITE ? BLACK : WHITE
-                            games.get(gameId).clock.elapsed[socket.data.color] += (now - games.get(gameId).clock.stamps[theirColor])
-                            games.get(gameId).clock.stamps[socket.data.color] = now
-                        }
+
+                        const now = epoch()
+                        const theirColor = socket.data.color === WHITE ? BLACK : WHITE
+                        games.get(gameId).clock.elapsed[socket.data.color] += (now - (games.get(gameId).clock.stamps[theirColor] || now))
+                        games.get(gameId).clock.stamps[socket.data.color] = now
+
                         io.to(room(gameId)).emit('clock-sync', games.get(gameId).clock.elapsed)
 
                         io.to(room(gameId)).emit('move', move)
@@ -131,6 +136,7 @@ io.on('connection', async (socket) => {
                             else if (chess.isStalemate()) emitStatus('draw by stalemate')
                             else if (chess.isThreefoldRepetition()) emitStatus('draw by threefold repetition')
                             else if (chess.isCheckmate()) emitStatus((chess.turn() === WHITE ? 'black' : 'white') + ' wins')
+                            else if (chess.isDrawByFiftyMoves()) emitStatus('draw by 50 moves')
                         }
                     }
                 }
@@ -178,7 +184,9 @@ io.on('connection', async (socket) => {
                 if (games.get(gameId).status === 'playing') {
                     const undoRequestBy = games.get(gameId).undoRequestBy
                     if (undoRequestBy && undoRequestBy !== socket.data.color) {
+                        games.get(gameId).undos[undoRequestBy]++
                         updateGame(gameId, { undoRequestBy: undefined })
+                        io.to(room(gameId)).emit('undo-count', games.get(gameId).undos)
                         const undoTurns = games.get(gameId).chess.turn() === undoRequestBy ? 2 : 1
                         const move = games.get(gameId).chess.undo()
                         if (move) {
