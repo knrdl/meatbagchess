@@ -1,4 +1,4 @@
-FROM node:24.0.1-alpine3.20 AS client_builder
+FROM node:24.0.2-alpine3.20 AS client_builder
 
 WORKDIR /app
 
@@ -9,7 +9,7 @@ RUN npm install && \
     npm run build
 
 
-FROM node:24.0.1-alpine3.20
+FROM node:24.0.2-alpine3.20
 
 WORKDIR /app
 
