@@ -1,31 +1,32 @@
 <script lang="ts">
     import { slide } from 'svelte/transition';
-    import { game } from './game';
+    import game from './game.svelte';
     import Loading from './Loading.svelte';
+    import { texts } from './i18n.svelte';
 </script>
 
-{#if $game.drawOfferBy === 'them'}
+{#if game.theyOfferDraw}
     <div transition:slide>
-        <button type="button" class="green" on:click={() => $game.acceptDraw()}> accept draw </button>
-        <button type="button" class="red" on:click={() => $game.rejectDraw()}> reject draw </button>
+        <button type="button" class="accept" onclick={() => game.acceptDraw()}> {texts.acceptDraw} </button>
+        <button type="button" class="reject" onclick={() => game.rejectDraw()}> {texts.rejectDraw} </button>
     </div>
-{:else if $game.undoRequestBy === 'them'}
+{:else if game.theyRequestUndo}
     <div transition:slide>
-        <button type="button" class="green" on:click={() => $game.acceptUndo()}> accept undo </button>
-        <button type="button" class="red" on:click={() => $game.rejectUndo()}> reject undo </button>
+        <button type="button" class="accept" onclick={() => game.acceptUndo()}> {texts.acceptUndo} </button>
+        <button type="button" class="reject" onclick={() => game.rejectUndo()}> {texts.rejectUndo} </button>
     </div>
 {:else}
     <div transition:slide>
-        <button type="button" on:click={() => $game.resign()}> resign </button>
-        {#if $game.drawOfferBy === 'us'}
+        <button type="button" onclick={() => game.resign()}> {texts.resign} </button>
+        {#if game.weOfferDraw}
             <Loading />
         {:else}
-            <button type="button" on:click={() => $game.offerDraw()}> draw </button>
+            <button type="button" onclick={() => game.offerDraw()}> {texts.draw} </button>
         {/if}
-        {#if $game.undoRequestBy === 'us'}
+        {#if game.weRequestUndo}
             <Loading />
-        {:else}
-            <button type="button" on:click={() => $game.requestUndo()}> undo </button>
+        {:else if game.ourLastMove}
+            <button type="button" onclick={() => game.requestUndo()}> {texts.undo} </button>
         {/if}
     </div>
 {/if}
@@ -41,12 +42,14 @@
 
     button {
         text-transform: uppercase;
+        color: white;
+        background: linear-gradient(45deg, darkgray, rgba(144, 144, 144, 0.936));
     }
 
-    button.green {
-        background: linear-gradient(45deg, green, rgba(144, 238, 144, 0.736));
+    button.accept {
+        background: linear-gradient(45deg, green, rgba(144, 238, 144, 0.936));
     }
-    button.red {
+    button.reject {
         background: linear-gradient(45deg, red, rgba(139, 0, 0, 0.841));
     }
 </style>

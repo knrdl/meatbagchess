@@ -1,32 +1,35 @@
 <script lang="ts">
     import { type Color, type PieceSymbol, type Square, QUEEN, ROOK, BISHOP, KNIGHT } from 'chess.js';
-    import { createEventDispatcher } from 'svelte';
     import PieceImg from './lib/chesspieces/PieceImg.svelte';
 
-    const dispatch = createEventDispatcher<{ promote: { type: PieceSymbol; target: Square } }>();
+    let {
+        color,
+        onpromote,
+    }: {
+        color: Color;
+        onpromote: ({ type, target }: { type: PieceSymbol; target: Square }) => void;
+    } = $props();
 
-    export let color: Color;
-
-    let dialog: HTMLDialogElement;
+    let dialog = $state<HTMLDialogElement>();
 
     const promotions: PieceSymbol[] = [QUEEN, ROOK, BISHOP, KNIGHT];
 
-    let targetSquare: Square;
+    let targetSquare = $state<Square>();
 
     export function show(target: Square) {
-        dialog.showModal();
+        dialog!.showModal();
         targetSquare = target;
     }
 </script>
 
-<dialog bind:this={dialog} on:cancel|preventDefault={() => {}}>
+<dialog bind:this={dialog} oncancel={(e) => e.preventDefault()}>
     <div style="display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 1.5rem">
         {#each promotions as type}
             <button
                 type="button"
-                on:click={() => {
-                    dispatch('promote', { type, target: targetSquare });
-                    dialog.close();
+                onclick={() => {
+                    onpromote({ type, target: targetSquare! });
+                    dialog!.close();
                 }}
             >
                 <PieceImg {color} {type} />

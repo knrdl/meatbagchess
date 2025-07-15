@@ -1,30 +1,41 @@
 <script lang="ts">
     import type { Color } from 'chess.js';
-    import { game } from './game';
+    import game from './game.svelte';
     import { slide } from 'svelte/transition';
+    import { onDestroy, onMount } from 'svelte';
 
-    export let color: Color;
+    let { color }: { color: Color } = $props();
+
+    onMount(() => {
+        game.onMove(onMove);
+    });
+
+    onDestroy(() => {
+        game.offMove(onMove);
+    });
 
     let handle: number | null = null;
+
+    let elapsedTime = $derived(game.elapsedTime?.[color] ?? null);
+
+    function onMove() {
+        if (elapsedTime !== null && handle === null) {
+            handle = setInterval(() => {
+                if (!game.isPlaying && handle !== null) {
+                    clearInterval(handle);
+                    handle = null;
+                } else if (game.currentTurn === color) {
+                    elapsedTime!++;
+                }
+            }, 1000);
+        }
+    }
 
     function formatTime(seconds: number) {
         const h = Math.floor(seconds / 60 / 60);
         const m = Math.floor((seconds / 60) % 60);
         const s = Math.floor(seconds % 60);
         return (h > 0 ? [h, m, s] : [m, s]).join(':').replace(/\b(\d)\b/g, '0$1');
-    }
-
-    $: elapsedTime = $game.elapsedTime[color];
-
-    $: if (elapsedTime !== null && handle === null) {
-        handle = setInterval(() => {
-            if ($game.status !== 'playing' && handle !== null) {
-                clearInterval(handle);
-                handle = null;
-            } else if ($game.chess.turn() === color) {
-                elapsedTime!++;
-            }
-        }, 1000);
     }
 </script>
 

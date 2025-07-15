@@ -1,68 +1,36 @@
 <script lang="ts">
-  import NewGameDialog from './NewGameDialog.svelte';
   import { onMount, tick } from 'svelte';
-  import { io, Socket } from 'socket.io-client';
+  import NewGameDialog from './NewGameDialog.svelte';
+
+  import game from './game.svelte';
   import Gamefield from './Gamefield.svelte';
-  import { Game, game } from './game';
-  import { WHITE, type Color } from 'chess.js';
 
-  let socket: Socket;
+  let newGameDialog = $state<NewGameDialog>();
+  let reload = $state(false);
 
-  let newGameDialog: NewGameDialog;
-  let reload = false;
+  let gameId = $derived(new URLSearchParams(window?.location?.search)?.get('gameid'));
 
-  onMount(() => {
+  onMount(async () => {
     if (gameId?.length !== 36) {
       const params = new URLSearchParams(window.location.search);
       params.set('gameid', window.crypto.randomUUID());
       window.location.search = params.toString();
     } else {
-      socket = io({ query: { gameId } });
-      $game = new Game(WHITE, socket); // show an empty game as background of the new game dialog
-
-      socket.on('continue-game', ({ fen, pgn, yourColor }: { fen: string; pgn: string; yourColor: Color }) => {
-        newGameDialog.close();
-        $game?.stop();
-        $game = new Game(yourColor, socket);
-        try {
-          $game.chess.loadPgn(pgn);
-        } catch (e) {
-          $game.chess.load(fen);
-        }
-        $game.chess.history({ verbose: true }).forEach((move) => {
-          if (move.captured) $game.captures[move.color].push(move.captured);
-        });
-
-        $game = $game;
-      });
-
-      newGameDialog.show();
-
-      socket.on('start-game', ({ yourColor }) => {
-        newGameDialog.close();
-        reload = true;
-        $game?.stop();
-        tick().then(() => {
-          $game = new Game(yourColor, socket);
-          reload = false;
-        });
-      });
+      startNewGame();
     }
   });
 
-  $: gameId = new URLSearchParams(window?.location?.search)?.get('gameid');
-
-  function newGame() {
-    newGameDialog.show();
+  async function startNewGame() {
+    newGameDialog!.show();
+    reload = true;
+    await game.init(gameId!, () => newGameDialog!.close());
+    await tick();
+    reload = false;
   }
 </script>
 
-<NewGameDialog
-  bind:this={newGameDialog}
-  on:create={({ detail }) => {
-    socket.emit('prepare-game', { myColor: detail });
-  }}
-/>
-{#if $game && !reload}
-  <Gamefield on:new-game={newGame} />
+<NewGameDialog bind:this={newGameDialog} onselect={(myColor) => game.selectColor(myColor)} />
+
+{#if !reload}
+  <Gamefield onnewgame={() => startNewGame()} />
 {/if}

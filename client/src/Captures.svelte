@@ -2,22 +2,22 @@
     import { BISHOP, KNIGHT, PAWN, QUEEN, ROOK, KING, WHITE, type PieceSymbol } from 'chess.js';
     import PieceImg from './lib/chesspieces/PieceImg.svelte';
     import { slide } from 'svelte/transition';
-    import { game } from './game';
+    import game from './game.svelte';
 
-    export let capturedBy: 'us' | 'them';
+    let { capturedBy }: { capturedBy: 'us' | 'them' } = $props();
 
     const order: PieceSymbol[] = [QUEEN, ROOK, BISHOP, KNIGHT, PAWN];
 
-    $: captures = $game.captures[capturedBy === 'us' ? $game.ourColor : $game.theirColor];
+    let captures = $derived(capturedBy === 'us' ? game.ourCaptures : game.theirCaptures);
 </script>
 
 {#if captures.length > 0}
     <div transition:slide style="display: flex; flex-wrap: wrap; gap: .25rem; align-items: center; justify-content: center">
-        {#each order as type}
+        {#each order as type (type)}
             {@const count = captures.filter((c) => c === type).length}
             {#if count > 0}
-                <div style="position: relative" class={capturedBy} class:last_capture={captures[captures.length - 1] == type} transition:slide>
-                    <PieceImg color={capturedBy === 'us' ? $game.theirColor : $game.ourColor} {type} --size="var(--piece-size)" />
+                <div style="position: relative" class="{capturedBy} {captures[captures.length - 1] == type ? 'last-capture' : ''}" transition:slide>
+                    <PieceImg color={capturedBy === 'us' ? game.theirColor : game.ourColor} {type} --size="var(--piece-size)" />
                     {#if count > 1}
                         <div class="dot">{count}</div>
                     {/if}
@@ -53,15 +53,15 @@
         user-select: none;
     }
 
-    .last_capture {
+    .last-capture {
         border-radius: 8px;
     }
 
-    .last_capture.us {
-        border-bottom: 1px solid gray;
+    .last-capture.us {
+        border-bottom: 3px solid gray;
     }
 
-    .last_capture.them {
-        border-top: 1px solid gray;
+    .last-capture.them {
+        border-top: 3px solid gray;
     }
 </style>

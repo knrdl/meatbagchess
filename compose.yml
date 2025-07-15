@@ -1,0 +1,33 @@
+# Docker Compose for dev
+
+services:
+  client:
+    image: node:alpine
+    ports:
+      - 5173:5173
+    networks:
+      - net
+    volumes:
+      - ./client:/app
+    working_dir: /app
+    command: |
+      sh -c '
+        npm install 
+        npm run dev -- --host 0.0.0.0
+      '
+
+  server:
+    image: node:alpine
+    networks:
+      - net
+    volumes:
+      - ./server:/app
+    working_dir: /app
+    command: |
+      sh -c '
+        npm install
+        npm run start
+      '
+
+networks:
+  net: 

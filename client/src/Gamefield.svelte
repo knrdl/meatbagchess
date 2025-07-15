@@ -4,15 +4,14 @@
   import Clock from './Clock.svelte';
   import GameOverScreen from './GameOverScreen.svelte';
   import { fade } from 'svelte/transition';
+  import game from './game.svelte';
   import Board from './Board.svelte';
-  import { game } from './game';
-  import { createEventDispatcher } from 'svelte';
   import UndoCounter from './UndoCounter.svelte';
 
-  const dispatch = createEventDispatcher<{ 'new-game': void }>();
+  let { onnewgame }: { onnewgame?: () => void } = $props();
 </script>
 
-{#if $game.status === 'playing'}
+{#if game.isPlaying}
   <aside transition:fade style="margin-bottom: .5rem;">
     <Actions />
   </aside>
@@ -24,18 +23,18 @@
       <Captures capturedBy="them" />
     </section>
     <section style="grid-area: their-clock">
-      <Clock color={$game.theirColor} />
-      <UndoCounter color={$game.theirColor} />
+      <Clock color={game.theirColor} />
+      <UndoCounter color={game.theirColor} />
     </section>
     <section style="grid-area: board" class="board-container">
       <Board />
-      {#if $game.status !== 'playing'}
-        <GameOverScreen on:click={() => dispatch('new-game')} />
+      {#if !game.isPlaying}
+        <GameOverScreen onclick={() => onnewgame?.()} />
       {/if}
     </section>
     <section style="grid-area: our-clock">
-      <Clock color={$game.ourColor} />
-      <UndoCounter color={$game.ourColor} />
+      <Clock color={game.ourColor} />
+      <UndoCounter color={game.ourColor} />
     </section>
     <section style="grid-area: our-captures">
       <Captures capturedBy="us" />

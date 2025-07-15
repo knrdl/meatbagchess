@@ -2,56 +2,67 @@
     import { KING, WHITE, type PieceSymbol, type Square } from 'chess.js';
     import { getPieceImage } from './lib/chesspieces';
     import PromotionDialog from './PromotionDialog.svelte';
-    import { game } from './game';
+    import game from './game.svelte';
     import PieceAnimation from './lib/chesspieces/PieceAnimation.svelte';
+    import { onDestroy, onMount } from 'svelte';
 
     const files = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
     const ranks = [1, 2, 3, 4, 5, 6, 7, 8];
 
-    let promotionDialog: PromotionDialog;
+    let forceUpdate = $state(Date.now());
+
+    let promotionDialog = $state<PromotionDialog>();
 
     let selectedPiece: {
         square: Square;
         possibleMoves: Square[];
-    } | null = null;
+    } | null = $state(null);
 
-    let squares: Partial<Record<Square, HTMLButtonElement>> = {};
+    let squares: Partial<Record<Square, HTMLButtonElement>> = $state({});
 
-    let ourLastMove: { from: Square; to: Square } | null = null;
-    let theirLastMove: { from: Square; to: Square } | null = null;
+    let pieceAnimation = $state<PieceAnimation>();
 
-    let pieceAnimation: PieceAnimation;
+    onMount(() => {
+        game.onMove(onMove);
+    });
+
+    onDestroy(() => {
+        game.offMove(onMove);
+    });
+
+    function onMove() {
+        forceUpdate = Date.now();
+        if (game.currentTurn === game.ourColor) {
+            // update possible moves
+            if (selectedPiece && game.getSquarePiece(selectedPiece.square)?.color === game.ourColor) setSelectedPiece(selectedPiece.square);
+            else selectedPiece = null;
+            if (game.theirLastMove) pieceAnimation?.animate(game.theirLastMove);
+        } else {
+            if (game.ourLastMove) pieceAnimation?.animate(game.ourLastMove);
+        }
+    }
 
     function getSquareInfo(x: number, y: number, ...rest: any[]) {
-        const rank = $game.ourColor === WHITE ? ranks[7 - y] : ranks[y];
-        const file = $game.ourColor === WHITE ? files[x] : files[7 - x];
+        const rank = game.ourColor === WHITE ? ranks[7 - y] : ranks[y];
+        const file = game.ourColor === WHITE ? files[x] : files[7 - x];
         const square = (file.toLowerCase() + rank.toString()) as Square;
-        const piece = $game.chess.get(square);
+        const piece = game.getSquarePiece(square);
         return { rank, file, square, piece };
     }
 
     function setSelectedPiece(square: Square) {
-        selectedPiece = {
-            square,
-            possibleMoves: $game.getPossibleMoves(square),
-        };
+        selectedPiece = { square, possibleMoves: game.getPossibleMoves(square) };
     }
 
     function selectSquare(square: Square) {
         if (selectedPiece?.square === square) {
             selectedPiece = null;
-        } else if ($game.chess.get(square)?.color === $game.ourColor) {
+        } else if (game.getSquarePiece(square)?.color === game.ourColor) {
             setSelectedPiece(square);
-        } else if ($game.chess.turn() === $game.ourColor && selectedPiece?.possibleMoves.includes(square)) {
-            const isPromotion = $game.chess
-                .moves({ square: selectedPiece.square, verbose: true })
-                .filter((move) => move.to === square)
-                .some((move) => move.promotion);
-
-            if (isPromotion) promotionDialog.show(square);
+        } else if (game.currentTurn === game.ourColor && selectedPiece?.possibleMoves.includes(square)) {
+            if (game.isMovePromotion({ from: selectedPiece.square, to: square })) promotionDialog?.show(square);
             else {
-                const move = { from: selectedPiece!.square, to: square };
-                $game.move(move);
+                game.move({ from: selectedPiece!.square, to: square });
                 selectedPiece = null;
             }
         } else if (selectedPiece) {
@@ -61,48 +72,38 @@
 
     function handlePromotion({ type, target }: { type: PieceSymbol; target: Square }) {
         const move = { from: selectedPiece!.square, to: target };
-        $game.move({ ...move, promotion: type });
+        game.move({ ...move, promotion: type });
         selectedPiece = null;
-    }
-
-    $: if ($game.lastMove && $game.lastMove !== ourLastMove && $game.lastMove !== theirLastMove) {
-        if ($game.chess.turn() === $game.ourColor) {
-            theirLastMove = $game.lastMove;
-            // update possible moves
-            if (selectedPiece && $game.chess.get(selectedPiece.square)?.color === $game.ourColor) setSelectedPiece(selectedPiece.square);
-            else selectedPiece = null;
-        } else {
-            ourLastMove = $game.lastMove;
-        }
-
-        pieceAnimation.animate($game.lastMove);
     }
 </script>
 
-<PromotionDialog bind:this={promotionDialog} color={$game.ourColor} on:promote={({ detail }) => handlePromotion(detail)} />
+<PromotionDialog bind:this={promotionDialog} color={game.ourColor} onpromote={(detail) => handlePromotion(detail)} />
 
-<PieceAnimation bind:this={pieceAnimation} {squares} on:animate={() => (pieceAnimation = pieceAnimation)} />
+<PieceAnimation bind:this={pieceAnimation} {squares} />
 
 <div class="board">
-    {#each [0, 1, 2, 3, 4, 5, 6, 7] as y}
-        {#each [0, 1, 2, 3, 4, 5, 6, 7] as x}
-            {@const { rank, file, square, piece } = getSquareInfo(x, y, $game)}
+    {#each [0, 1, 2, 3, 4, 5, 6, 7] as y (y)}
+        {#each [0, 1, 2, 3, 4, 5, 6, 7] as x (x)}
+            {@const { rank, file, square, piece } = getSquareInfo(x, y, forceUpdate)}
             {@const isSelected = selectedPiece?.square === square}
-            {@const isSelectable = piece?.color === $game.ourColor || selectedPiece?.possibleMoves.includes(square)}
+            {@const isSelectable = piece?.color === game.ourColor || selectedPiece?.possibleMoves.includes(square)}
             {@const isCheck =
                 piece?.type === KING &&
-                $game.chess.isCheck() &&
-                (($game.chess.turn() === $game.ourColor && piece.color === $game.ourColor) || ($game.chess.turn() !== $game.ourColor && piece.color !== $game.ourColor))}
+                game.isCheck() &&
+                ((game.currentTurn === game.ourColor && piece.color === game.ourColor) || (game.currentTurn !== game.ourColor && piece.color !== game.ourColor))}
+            {@const isLastMove = game.ourLastMove?.from === square || game.ourLastMove?.to === square || game.theirLastMove?.from === square || game.theirLastMove?.to === square}
             <button
                 bind:this={squares[square]}
                 type="button"
-                class="square {$game.chess.squareColor(square)}"
-                class:check={isCheck}
-                class:last-move={ourLastMove?.from === square || ourLastMove?.to === square || theirLastMove?.from === square || theirLastMove?.to === square}
-                class:selected={isSelected}
-                class:selectable={isSelectable}
+                class="
+            square {game.getSquareColor(square) || ''}
+            {isSelectable ? 'selectable' : ''}
+            {isSelected ? 'selected' : ''}
+            {!isSelected && isCheck ? 'check' : ''}
+            {!isSelected && !isCheck && isLastMove ? 'last-move' : ''}
+            "
                 style={piece && pieceAnimation?.lastMove?.to !== square ? `background-image: url('${getPieceImage(piece)}')` : 'background-image: none'}
-                on:click={() => selectSquare(square)}
+                onclick={() => selectSquare(square)}
             >
                 {#if x === 0}
                     <div style="position: absolute; left:.1rem;top:-.1rem" class="text-border">
@@ -115,7 +116,7 @@
                     </div>
                 {/if}
                 {#if selectedPiece?.possibleMoves.includes(square)}
-                    <div class="move-target {$game.chess.turn() === $game.ourColor ? 'our-turn' : 'their-turn'}" class:attack={piece?.color === $game.theirColor}></div>
+                    <div class="move-target {game.currentTurn === game.ourColor ? 'our-turn' : 'their-turn'} {piece?.color === game.theirColor ? 'attack' : ''}"></div>
                 {/if}
             </button>
         {/each}

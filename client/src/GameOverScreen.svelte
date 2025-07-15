@@ -1,9 +1,10 @@
 <script lang="ts">
-    import { game } from './game';
+    let { onclick } = $props();
+    import game from './game.svelte';
 </script>
 
-<button type="button" class="gameover shadow" class:green={$game.isWon} class:red={$game.isLost} class:yellow={$game.isDraw} on:click>
-    {$game.status}
+<button type="button" class="gameover shadow {game.isWon ? 'green' : ''} {game.isDraw ? 'yellow' : ''} {game.isLost ? 'red' : ''}" {onclick}>
+    {game.translatedGameResult}
 </button>
 
 <style>
@@ -19,6 +20,10 @@
         margin: 0;
         padding: 0.5rem;
         word-wrap: break-word;
+        color: white;
+        /* stay in background */
+        transform: none !important;
+        background-color: transparent !important;
 
         font-size: 3rem;
         letter-spacing: 1rem;
@@ -33,10 +38,6 @@
     .green {
         background: linear-gradient(50deg, #37ff00aa, #0dff00aa, #0dff00aa);
     }
-
-    /* .shadow {
-        position: relative;
-    } */
 
     .shadow:before,
     .shadow:after {
