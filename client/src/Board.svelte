@@ -42,7 +42,7 @@
         }
     }
 
-    function getSquareInfo(x: number, y: number, ...rest: any[]) {
+    function getSquareInfo(x: number, y: number, ..._rest: unknown[]) {
         const rank = game.ourColor === WHITE ? ranks[7 - y] : ranks[y];
         const file = game.ourColor === WHITE ? files[x] : files[7 - x];
         const square = (file.toLowerCase() + rank.toString()) as Square;

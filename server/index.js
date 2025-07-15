@@ -59,7 +59,7 @@ async function tryStartGame(gameId) {
 
 io.on('connection', async (socket) => {
     const gameId = socket.handshake.query.gameId
-    if (/^[a-z0-9\-]{36}$/.test(gameId)) {
+    if (/^[a-z0-9-]{36}$/.test(gameId)) {
         if (!games.has(gameId)) {
             games.set(gameId, { status: 'preparing' })
         }
@@ -114,7 +114,7 @@ io.on('connection', async (socket) => {
                     const move = (() => {
                         try {
                             return chess.move({ from, to, promotion })
-                        } catch (e) {
+                        } catch (_e) {
                             return null
                         }
                     })()

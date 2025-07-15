@@ -15,7 +15,7 @@ WORKDIR /app
 
 COPY server .
 
-RUN npm install
+RUN npm install --omit=dev
 
 COPY --from=client_builder /app/dist /app/www
 

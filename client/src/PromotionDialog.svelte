@@ -24,7 +24,7 @@
 
 <dialog bind:this={dialog} oncancel={(e) => e.preventDefault()}>
     <div style="display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 1.5rem">
-        {#each promotions as type}
+        {#each promotions as type (type)}
             <button
                 type="button"
                 onclick={() => {

@@ -1,4 +1,4 @@
-import { BLACK, Chess, Move, WHITE, type Color, type Piece, type PieceSymbol, type Square } from "chess.js"
+import { BLACK, Chess, Move, WHITE, type Color, type PieceSymbol, type Square } from "chess.js"
 import { io, Socket } from 'socket.io-client'
 import { playSound, stopSound } from "./lib/sounds"
 import { texts } from "./i18n.svelte"
@@ -79,7 +79,7 @@ function init(gameId: string, startGameCb: () => void) {
             initGame(yourColor)
             try {
                 game!.chess.loadPgn(pgn)
-            } catch (e) {
+            } catch (_e) {
                 game!.chess.load(fen)
             }
             game!.chess.history({ verbose: true }).forEach((move) => {
