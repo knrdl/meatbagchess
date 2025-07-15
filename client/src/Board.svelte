@@ -97,6 +97,7 @@
                 type="button"
                 class="
             square {game.getSquareColor(square) || ''}
+            pieces-style-{piecesStyle.selected}
             {isSelectable ? 'selectable' : ''}
             {isSelected ? 'selected' : ''}
             {!isSelected && isCheck ? 'check' : ''}
@@ -213,9 +214,13 @@
         }
 
         .board > .square {
-            background-size: 120%;
             border-radius: 0;
             border: none;
+        }
+
+        .board > .square.pieces-style-standard {
+            /* the standard images have a transparent border which makes the images too small on mobile displays */
+            background-size: 120%;
         }
 
         .board > .square > .move-target {
