@@ -1,10 +1,10 @@
 <script lang="ts">
-    import type { Color } from 'chess.js';
-    import game from './game.svelte';
-    import { slide } from 'svelte/transition';
-    import { texts } from './i18n.svelte';
+    import type { Color } from 'chess.js'
+    import game from './game.svelte'
+    import { slide } from 'svelte/transition'
+    import { texts } from './i18n.svelte'
 
-    let { color }: { color: Color } = $props();
+    let { color }: { color: Color } = $props()
 </script>
 
 {#if (game.undos?.[color] || 0) > 0}

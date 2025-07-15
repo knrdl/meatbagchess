@@ -1,27 +1,27 @@
 <script lang="ts">
-    import { BLACK, KING, WHITE, type Color } from 'chess.js';
-    import PieceImg from './lib/chesspieces/PieceImg.svelte';
-    import shareImg from './lib/share.png';
-    import { scale, slide } from 'svelte/transition';
-    import { texts } from './i18n.svelte';
+    import { BLACK, KING, WHITE, type Color } from 'chess.js'
+    import PieceImg from './lib/chesspieces/PieceImg.svelte'
+    import shareImg from './lib/share.png'
+    import { scale, slide } from 'svelte/transition'
+    import { texts } from './i18n.svelte'
 
-    let { onselect }: { onselect: (color: Color) => void } = $props();
+    let { onselect }: { onselect: (color: Color) => void } = $props()
 
-    let dialog = $state<HTMLDialogElement>();
+    let dialog = $state<HTMLDialogElement>()
 
-    let selectedColor = $state<typeof BLACK | typeof WHITE | null>(null);
+    let selectedColor = $state<typeof BLACK | typeof WHITE | null>(null)
 
     export function show() {
-        selectedColor = null;
-        dialog!.showModal();
+        selectedColor = null
+        dialog!.showModal()
     }
 
     export function close() {
-        dialog!.close();
+        dialog!.close()
     }
 </script>
 
-<dialog bind:this={dialog} oncancel={(e) => e.preventDefault()} class="glass3d">
+<dialog bind:this={dialog} oncancel={e => e.preventDefault()} class="glass3d">
     <!-- prevent focus on open -->
     <!-- svelte-ignore a11y_consider_explicit_label -->
     <button type="button" style="opacity: 0; width: 0; height: 0; margin: 0; padding: 0; border: none"></button>
@@ -40,7 +40,7 @@
             <button
                 type="button"
                 onclick={() => {
-                    navigator.share({ url: window.location.toString() });
+                    navigator.share({ url: window.location.toString() })
                 }}
             >
                 <img src={shareImg} alt="Share" class="share" />
@@ -60,8 +60,8 @@
             <button
                 type="button"
                 onclick={() => {
-                    selectedColor = WHITE;
-                    onselect(WHITE);
+                    selectedColor = WHITE
+                    onselect(WHITE)
                 }}
             >
                 <PieceImg color={WHITE} type={KING} />
@@ -69,8 +69,8 @@
             <button
                 type="button"
                 onclick={() => {
-                    selectedColor = Math.random() >= 0.5 ? BLACK : WHITE;
-                    onselect(selectedColor);
+                    selectedColor = Math.random() >= 0.5 ? BLACK : WHITE
+                    onselect(selectedColor)
                 }}
             >
                 <div style="position: relative;">
@@ -88,15 +88,17 @@
             <button
                 type="button"
                 onclick={() => {
-                    selectedColor = BLACK;
-                    onselect(BLACK);
+                    selectedColor = BLACK
+                    onselect(BLACK)
                 }}
             >
                 <PieceImg color={BLACK} type={KING} />
             </button>
         </div>
     {:else}
-        <div in:scale={{ duration: 1250 }}><PieceImg color={selectedColor} type={KING} /></div>
+        <div in:scale={{ duration: 1250 }}>
+            <PieceImg color={selectedColor} type={KING} />
+        </div>
         <div style="margin-top: 1rem;">{texts.waitingForOpponent} . . .</div>
     {/if}
 </dialog>

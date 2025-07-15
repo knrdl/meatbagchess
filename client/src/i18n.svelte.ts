@@ -25,10 +25,10 @@ export const texts = {
             'draw by stalemate': 'draw by stalemate',
             'draw by threefold repetition': 'draw by threefold repetition',
             'draw by insufficient material': 'draw by insufficient material',
-            'draw by 50 moves': 'draw by 50 moves'
+            'draw by 50 moves': 'draw by 50 moves',
         },
         newGame: 'new game',
-        waitingForOpponent: 'Waiting for the opponent to join'
+        waitingForOpponent: 'Waiting for the opponent to join',
     },
     de: {
         resign: 'aufgeben',
@@ -48,10 +48,10 @@ export const texts = {
             'draw by stalemate': 'Remis durch Patt',
             'draw by threefold repetition': 'Remis durch dreifache Stellungswiederholung',
             'draw by insufficient material': 'Remis wegen unzureichenden Materials',
-            'draw by 50 moves': 'Remis gemäß der 50-Züge-Regel'
+            'draw by 50 moves': 'Remis gemäß der 50-Züge-Regel',
         },
         newGame: 'Neues Spiel',
-        waitingForOpponent: 'Warten auf Beitritt des Gegners'
+        waitingForOpponent: 'Warten auf Beitritt des Gegners',
     },
     es: {
         resign: 'abandonar',
@@ -71,9 +71,9 @@ export const texts = {
             'draw by stalemate': 'tablas por rey ahogado',
             'draw by threefold repetition': 'tablas por triple repetición',
             'draw by insufficient material': 'tablas por material insuficiente',
-            'draw by 50 moves': 'tablas según la regla de las 50 jugadas'
+            'draw by 50 moves': 'tablas según la regla de las 50 jugadas',
         },
         newGame: 'nueva partida',
-        waitingForOpponent: 'Esperando a que el oponente se una'
-    }
+        waitingForOpponent: 'Esperando a que el oponente se una',
+    },
 }[userLang]!

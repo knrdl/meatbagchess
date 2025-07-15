@@ -1,4 +1,3 @@
-
 // Sounds: Model_Ten
 import ourMove from './M10SpacePing.mp3'
 import theirMove from './M10SpaceTine.mp3'
@@ -21,7 +20,7 @@ const sounds: Record<AudioEvent, string> = {
     win,
     lose,
     undo,
-    offer
+    offer,
 }
 
 let currentAudio: HTMLAudioElement | null = null
@@ -35,6 +34,5 @@ export function playSound(type: AudioEvent) {
 }
 
 export function stopSound(type: AudioEvent) {
-    if (currentAudio?.dataset.type === type)
-        currentAudio.load()
+    if (currentAudio?.dataset.type === type) currentAudio.load()
 }

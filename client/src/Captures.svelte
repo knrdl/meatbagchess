@@ -1,20 +1,20 @@
 <script lang="ts">
-    import { BISHOP, KNIGHT, PAWN, QUEEN, ROOK, KING, WHITE, type PieceSymbol } from 'chess.js';
-    import PieceImg from './lib/chesspieces/PieceImg.svelte';
-    import { slide } from 'svelte/transition';
-    import game from './game.svelte';
+    import { BISHOP, KNIGHT, PAWN, QUEEN, ROOK, KING, WHITE, type PieceSymbol } from 'chess.js'
+    import PieceImg from './lib/chesspieces/PieceImg.svelte'
+    import { slide } from 'svelte/transition'
+    import game from './game.svelte'
 
-    let { capturedBy }: { capturedBy: 'us' | 'them' } = $props();
+    let { capturedBy }: { capturedBy: 'us' | 'them' } = $props()
 
-    const order: PieceSymbol[] = [QUEEN, ROOK, BISHOP, KNIGHT, PAWN];
+    const order: PieceSymbol[] = [QUEEN, ROOK, BISHOP, KNIGHT, PAWN]
 
-    let captures = $derived(capturedBy === 'us' ? game.ourCaptures : game.theirCaptures);
+    let captures = $derived(capturedBy === 'us' ? game.ourCaptures : game.theirCaptures)
 </script>
 
 {#if captures.length > 0}
     <div transition:slide style="display: flex; flex-wrap: wrap; gap: .25rem; align-items: center; justify-content: center">
         {#each order as type (type)}
-            {@const count = captures.filter((c) => c === type).length}
+            {@const count = captures.filter(c => c === type).length}
             {#if count > 0}
                 <div style="position: relative" class="{capturedBy} {captures[captures.length - 1] == type ? 'last-capture' : ''}" transition:slide>
                     <PieceImg color={capturedBy === 'us' ? game.theirColor : game.ourColor} {type} --size="var(--piece-size)" />

@@ -1,7 +1,7 @@
-import { BLACK, Chess, Move, WHITE, type Color, type PieceSymbol, type Square } from "chess.js"
+import { BLACK, Chess, Move, WHITE, type Color, type PieceSymbol, type Square } from 'chess.js'
 import { io, Socket } from 'socket.io-client'
-import { playSound, stopSound } from "./lib/sounds"
-import { texts } from "./i18n.svelte"
+import { playSound, stopSound } from './lib/sounds'
+import { texts } from './i18n.svelte'
 
 const COLOR_NAMES = { [BLACK]: 'black', [WHITE]: 'white' }
 
@@ -30,8 +30,19 @@ let isDraw = $derived(game && game.status.startsWith('draw'))
 let translatedGameResult = $derived(game && game.status !== 'playing' && game.status !== 'preparing' ? texts.gameResult[game.status] : '')
 
 export interface Game {
-    status: 'preparing' | 'playing' | 'white resigns' | 'black resigns' | 'draw by agreement' | 'draw by stalemate' | 'draw by threefold repetition' | 'draw by insufficient material' | 'draw by 50 moves' | 'white wins' | 'black wins'
-    ourColor: Color,
+    status:
+        | 'preparing'
+        | 'playing'
+        | 'white resigns'
+        | 'black resigns'
+        | 'draw by agreement'
+        | 'draw by stalemate'
+        | 'draw by threefold repetition'
+        | 'draw by insufficient material'
+        | 'draw by 50 moves'
+        | 'white wins'
+        | 'black wins'
+    ourColor: Color
     chess: Chess
     captures: { [key in Color]: PieceSymbol[] }
     undos: { [key in Color]: number }
@@ -49,7 +60,6 @@ function updateMoves() {
 }
 
 function init(gameId: string, startGameCb: () => void) {
-
     function initGame(ourColor: Color) {
         game = {
             status: 'preparing',
@@ -59,7 +69,7 @@ function init(gameId: string, startGameCb: () => void) {
             undos: { [BLACK]: 0, [WHITE]: 0 },
             elapsedTime: { [BLACK]: null, [WHITE]: null },
             drawOfferBy: null,
-            undoRequestBy: null
+            undoRequestBy: null,
         }
     }
 
@@ -82,7 +92,7 @@ function init(gameId: string, startGameCb: () => void) {
             } catch (_e) {
                 game!.chess.load(fen)
             }
-            game!.chess.history({ verbose: true }).forEach((move) => {
+            game!.chess.history({ verbose: true }).forEach(move => {
                 if (move.captured) game!.captures[move.color].push(move.captured)
             })
             updateMoves()
@@ -202,18 +212,22 @@ export default {
     move({ from, to, promotion }: { from: Square; to: Square; promotion?: PieceSymbol }) {
         socket!.emit('move', { from, to, promotion })
     },
-    onMove(cb: () => void) { moveCallbacks.push(cb) },
-    offMove(cb: () => void) { moveCallbacks.splice(moveCallbacks.indexOf(cb), 1) },
+    onMove(cb: () => void) {
+        moveCallbacks.push(cb)
+    },
+    offMove(cb: () => void) {
+        moveCallbacks.splice(moveCallbacks.indexOf(cb), 1)
+    },
 
     getPossibleMoves(square: Square) {
         if (this.currentTurn === this.ourColor) {
-            return game!.chess.moves({ square, verbose: true }).map((move) => move.to)
+            return game!.chess.moves({ square, verbose: true }).map(move => move.to)
         } else {
             const tokens = game!.chess.fen().split(' ')
             tokens[1] = this.theirColor
             tokens[1] = tokens[1] === WHITE ? BLACK : WHITE
             const fakeGame = new Chess(tokens.join(' '))
-            return fakeGame.moves({ square, verbose: true }).map((move) => move.to)
+            return fakeGame.moves({ square, verbose: true }).map(move => move.to)
         }
     },
 
@@ -223,33 +237,74 @@ export default {
     getSquareColor(square: Square) {
         return game?.chess.squareColor(square) || undefined
     },
-    isCheck() { return game?.chess.isCheck() },
-
-    isMovePromotion({ from, to }: { from: Square, to: Square }) {
-        return game?.chess
-            .moves({ square: from, verbose: true })
-            .filter((move) => move.to === to)
-            .some((move) => move.promotion) ?? false
+    isCheck() {
+        return game?.chess.isCheck()
     },
 
-    get isRunning() { return isRunning },
-    get isPlaying() { return isPlaying },
-    get translatedGameResult() { return translatedGameResult },
-    get currentTurn() { return game?.chess.turn() },
-    get isWon() { return isWon },
-    get isLost() { return isLost },
-    get isDraw() { return isDraw },
-    get weOfferDraw() { return weOfferDraw },
-    get theyOfferDraw() { return theyOfferDraw },
-    get weRequestUndo() { return weRequestUndo },
-    get theyRequestUndo() { return theyRequestUndo },
-    get ourColor() { return ourColor },
-    get theirColor() { return theirColor },
-    get ourCaptures() { return ourCaptures },
-    get theirCaptures() { return theirCaptures },
-    get elapsedTime() { return game?.elapsedTime },
-    get undos() { return game?.undos },
-    get ourLastMove() { return ourLastMove },
-    get theirLastMove() { return theirLastMove },
-}
+    isMovePromotion({ from, to }: { from: Square; to: Square }) {
+        return (
+            game?.chess
+                .moves({ square: from, verbose: true })
+                .filter(move => move.to === to)
+                .some(move => move.promotion) ?? false
+        )
+    },
 
+    get isRunning() {
+        return isRunning
+    },
+    get isPlaying() {
+        return isPlaying
+    },
+    get translatedGameResult() {
+        return translatedGameResult
+    },
+    get currentTurn() {
+        return game?.chess.turn()
+    },
+    get isWon() {
+        return isWon
+    },
+    get isLost() {
+        return isLost
+    },
+    get isDraw() {
+        return isDraw
+    },
+    get weOfferDraw() {
+        return weOfferDraw
+    },
+    get theyOfferDraw() {
+        return theyOfferDraw
+    },
+    get weRequestUndo() {
+        return weRequestUndo
+    },
+    get theyRequestUndo() {
+        return theyRequestUndo
+    },
+    get ourColor() {
+        return ourColor
+    },
+    get theirColor() {
+        return theirColor
+    },
+    get ourCaptures() {
+        return ourCaptures
+    },
+    get theirCaptures() {
+        return theirCaptures
+    },
+    get elapsedTime() {
+        return game?.elapsedTime
+    },
+    get undos() {
+        return game?.undos
+    },
+    get ourLastMove() {
+        return ourLastMove
+    },
+    get theirLastMove() {
+        return theirLastMove
+    },
+}

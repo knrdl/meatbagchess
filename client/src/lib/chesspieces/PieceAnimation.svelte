@@ -1,23 +1,23 @@
 <script lang="ts">
-    import { Move, WHITE, type Square } from 'chess.js';
-    import { getPieceImage, piecesStyle } from './index.svelte';
-    import { tick } from 'svelte';
+    import { Move, WHITE, type Square } from 'chess.js'
+    import { getPieceImage, piecesStyle } from './index.svelte'
+    import { tick } from 'svelte'
 
-    let { squares }: { squares: Partial<Record<Square, HTMLButtonElement>> } = $props();
+    let { squares }: { squares: Partial<Record<Square, HTMLButtonElement>> } = $props()
 
-    let lastMove = $state<Move>();
+    let lastMove = $state<Move>()
 
-    const animationDuration = 500; // ms
-    let handle: number | null = null;
+    const animationDuration = 500 // ms
+    let handle: number | null = null
 
     export function animate(move: Move) {
-        lastMove = undefined;
-        tick().then(() => (lastMove = move));
-        if (handle !== null) clearTimeout(handle);
-        handle = setTimeout(() => (lastMove = undefined), animationDuration);
+        lastMove = undefined
+        tick().then(() => (lastMove = move))
+        if (handle !== null) clearTimeout(handle)
+        handle = setTimeout(() => (lastMove = undefined), animationDuration)
     }
 
-    export { lastMove };
+    export { lastMove }
 </script>
 
 {#if lastMove}

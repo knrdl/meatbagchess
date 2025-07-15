@@ -1,41 +1,41 @@
 <script lang="ts">
-    import type { Color } from 'chess.js';
-    import game from './game.svelte';
-    import { slide } from 'svelte/transition';
-    import { onDestroy, onMount } from 'svelte';
+    import type { Color } from 'chess.js'
+    import game from './game.svelte'
+    import { slide } from 'svelte/transition'
+    import { onDestroy, onMount } from 'svelte'
 
-    let { color }: { color: Color } = $props();
+    let { color }: { color: Color } = $props()
 
     onMount(() => {
-        game.onMove(onMove);
-    });
+        game.onMove(onMove)
+    })
 
     onDestroy(() => {
-        game.offMove(onMove);
-    });
+        game.offMove(onMove)
+    })
 
-    let handle: number | null = null;
+    let handle: number | null = null
 
-    let elapsedTime = $derived(game.elapsedTime?.[color] ?? null);
+    let elapsedTime = $derived(game.elapsedTime?.[color] ?? null)
 
     function onMove() {
         if (elapsedTime !== null && handle === null) {
             handle = setInterval(() => {
                 if (!game.isPlaying && handle !== null) {
-                    clearInterval(handle);
-                    handle = null;
+                    clearInterval(handle)
+                    handle = null
                 } else if (game.currentTurn === color) {
-                    elapsedTime!++;
+                    elapsedTime!++
                 }
-            }, 1000);
+            }, 1000)
         }
     }
 
     function formatTime(seconds: number) {
-        const h = Math.floor(seconds / 60 / 60);
-        const m = Math.floor((seconds / 60) % 60);
-        const s = Math.floor(seconds % 60);
-        return (h > 0 ? [h, m, s] : [m, s]).join(':').replace(/\b(\d)\b/g, '0$1');
+        const h = Math.floor(seconds / 60 / 60)
+        const m = Math.floor((seconds / 60) % 60)
+        const s = Math.floor(seconds % 60)
+        return (h > 0 ? [h, m, s] : [m, s]).join(':').replace(/\b(\d)\b/g, '0$1')
     }
 </script>
 

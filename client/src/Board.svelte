@@ -1,83 +1,83 @@
 <script lang="ts">
-    import { KING, WHITE, type PieceSymbol, type Square } from 'chess.js';
-    import { getPieceImage, piecesStyle } from './lib/chesspieces/index.svelte';
-    import PromotionDialog from './PromotionDialog.svelte';
-    import game from './game.svelte';
-    import PieceAnimation from './lib/chesspieces/PieceAnimation.svelte';
-    import { onDestroy, onMount } from 'svelte';
+    import { KING, WHITE, type PieceSymbol, type Square } from 'chess.js'
+    import { getPieceImage, piecesStyle } from './lib/chesspieces/index.svelte'
+    import PromotionDialog from './PromotionDialog.svelte'
+    import game from './game.svelte'
+    import PieceAnimation from './lib/chesspieces/PieceAnimation.svelte'
+    import { onDestroy, onMount } from 'svelte'
 
-    const files = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
-    const ranks = [1, 2, 3, 4, 5, 6, 7, 8];
+    const files = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']
+    const ranks = [1, 2, 3, 4, 5, 6, 7, 8]
 
-    let forceUpdate = $state(Date.now());
+    let forceUpdate = $state(Date.now())
 
-    let promotionDialog = $state<PromotionDialog>();
+    let promotionDialog = $state<PromotionDialog>()
 
     let selectedPiece: {
-        square: Square;
-        possibleMoves: Square[];
-    } | null = $state(null);
+        square: Square
+        possibleMoves: Square[]
+    } | null = $state(null)
 
-    let squares: Partial<Record<Square, HTMLButtonElement>> = $state({});
+    let squares: Partial<Record<Square, HTMLButtonElement>> = $state({})
 
-    let pieceAnimation = $state<PieceAnimation>();
+    let pieceAnimation = $state<PieceAnimation>()
 
     onMount(() => {
-        game.onMove(onMove);
-    });
+        game.onMove(onMove)
+    })
 
     onDestroy(() => {
-        game.offMove(onMove);
-    });
+        game.offMove(onMove)
+    })
 
     function onMove() {
-        forceUpdate = Date.now();
+        forceUpdate = Date.now()
         if (game.currentTurn === game.ourColor) {
             // update possible moves
-            if (selectedPiece && game.getSquarePiece(selectedPiece.square)?.color === game.ourColor) setSelectedPiece(selectedPiece.square);
-            else selectedPiece = null;
-            if (game.theirLastMove) pieceAnimation?.animate(game.theirLastMove);
+            if (selectedPiece && game.getSquarePiece(selectedPiece.square)?.color === game.ourColor) setSelectedPiece(selectedPiece.square)
+            else selectedPiece = null
+            if (game.theirLastMove) pieceAnimation?.animate(game.theirLastMove)
         } else {
-            if (game.ourLastMove) pieceAnimation?.animate(game.ourLastMove);
+            if (game.ourLastMove) pieceAnimation?.animate(game.ourLastMove)
         }
     }
 
     function getSquareInfo(x: number, y: number, ..._rest: unknown[]) {
-        const rank = game.ourColor === WHITE ? ranks[7 - y] : ranks[y];
-        const file = game.ourColor === WHITE ? files[x] : files[7 - x];
-        const square = (file.toLowerCase() + rank.toString()) as Square;
-        const piece = game.getSquarePiece(square);
-        return { rank, file, square, piece };
+        const rank = game.ourColor === WHITE ? ranks[7 - y] : ranks[y]
+        const file = game.ourColor === WHITE ? files[x] : files[7 - x]
+        const square = (file.toLowerCase() + rank.toString()) as Square
+        const piece = game.getSquarePiece(square)
+        return { rank, file, square, piece }
     }
 
     function setSelectedPiece(square: Square) {
-        selectedPiece = { square, possibleMoves: game.getPossibleMoves(square) };
+        selectedPiece = { square, possibleMoves: game.getPossibleMoves(square) }
     }
 
     function selectSquare(square: Square) {
         if (selectedPiece?.square === square) {
-            selectedPiece = null;
+            selectedPiece = null
         } else if (game.getSquarePiece(square)?.color === game.ourColor) {
-            setSelectedPiece(square);
+            setSelectedPiece(square)
         } else if (game.currentTurn === game.ourColor && selectedPiece?.possibleMoves.includes(square)) {
-            if (game.isMovePromotion({ from: selectedPiece.square, to: square })) promotionDialog?.show(square);
+            if (game.isMovePromotion({ from: selectedPiece.square, to: square })) promotionDialog?.show(square)
             else {
-                game.move({ from: selectedPiece!.square, to: square });
-                selectedPiece = null;
+                game.move({ from: selectedPiece!.square, to: square })
+                selectedPiece = null
             }
         } else if (selectedPiece) {
-            selectedPiece = null;
+            selectedPiece = null
         }
     }
 
     function handlePromotion({ type, target }: { type: PieceSymbol; target: Square }) {
-        const move = { from: selectedPiece!.square, to: target };
-        game.move({ ...move, promotion: type });
-        selectedPiece = null;
+        const move = { from: selectedPiece!.square, to: target }
+        game.move({ ...move, promotion: type })
+        selectedPiece = null
     }
 </script>
 
-<PromotionDialog bind:this={promotionDialog} color={game.ourColor} onpromote={(detail) => handlePromotion(detail)} />
+<PromotionDialog bind:this={promotionDialog} color={game.ourColor} onpromote={detail => handlePromotion(detail)} />
 
 <PieceAnimation bind:this={pieceAnimation} {squares} />
 

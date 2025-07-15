@@ -1,8 +1,16 @@
 <script lang="ts">
-    import { WHITE, type Color, type PieceSymbol } from 'chess.js';
-    import { getPieceImage, piecesStyle } from './index.svelte';
+    import { WHITE, type Color, type PieceSymbol } from 'chess.js'
+    import { getPieceImage, piecesStyle } from './index.svelte'
 
-    let { color, type, style }: { color: Color; type: PieceSymbol; style?: typeof piecesStyle.selected } = $props();
+    let {
+        color,
+        type,
+        style,
+    }: {
+        color: Color
+        type: PieceSymbol
+        style?: typeof piecesStyle.selected
+    } = $props()
 </script>
 
 <img

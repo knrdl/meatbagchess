@@ -1,6 +1,6 @@
 <script lang="ts">
-    let { onclick } = $props();
-    import game from './game.svelte';
+    let { onclick } = $props()
+    import game from './game.svelte'
 </script>
 
 <button type="button" class="gameover shadow {game.isWon ? 'green' : ''} {game.isDraw ? 'yellow' : ''} {game.isLost ? 'red' : ''}" {onclick}>

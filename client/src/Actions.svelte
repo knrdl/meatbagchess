@@ -1,32 +1,46 @@
 <script lang="ts">
-    import { slide } from 'svelte/transition';
-    import game from './game.svelte';
-    import Loading from './Loading.svelte';
-    import { texts } from './i18n.svelte';
+    import { slide } from 'svelte/transition'
+    import game from './game.svelte'
+    import Loading from './Loading.svelte'
+    import { texts } from './i18n.svelte'
 </script>
 
 {#if game.theyOfferDraw}
     <div transition:slide>
-        <button type="button" class="accept" onclick={() => game.acceptDraw()}> {texts.acceptDraw} </button>
-        <button type="button" class="reject" onclick={() => game.rejectDraw()}> {texts.rejectDraw} </button>
+        <button type="button" class="accept" onclick={() => game.acceptDraw()}>
+            {texts.acceptDraw}
+        </button>
+        <button type="button" class="reject" onclick={() => game.rejectDraw()}>
+            {texts.rejectDraw}
+        </button>
     </div>
 {:else if game.theyRequestUndo}
     <div transition:slide>
-        <button type="button" class="accept" onclick={() => game.acceptUndo()}> {texts.acceptUndo} </button>
-        <button type="button" class="reject" onclick={() => game.rejectUndo()}> {texts.rejectUndo} </button>
+        <button type="button" class="accept" onclick={() => game.acceptUndo()}>
+            {texts.acceptUndo}
+        </button>
+        <button type="button" class="reject" onclick={() => game.rejectUndo()}>
+            {texts.rejectUndo}
+        </button>
     </div>
 {:else}
     <div transition:slide>
-        <button type="button" onclick={() => game.resign()}> {texts.resign} </button>
+        <button type="button" onclick={() => game.resign()}>
+            {texts.resign}
+        </button>
         {#if game.weOfferDraw}
             <Loading />
         {:else}
-            <button type="button" onclick={() => game.offerDraw()}> {texts.draw} </button>
+            <button type="button" onclick={() => game.offerDraw()}>
+                {texts.draw}
+            </button>
         {/if}
         {#if game.weRequestUndo}
             <Loading />
         {:else if game.ourLastMove}
-            <button type="button" onclick={() => game.requestUndo()}> {texts.undo} </button>
+            <button type="button" onclick={() => game.requestUndo()}>
+                {texts.undo}
+            </button>
         {/if}
     </div>
 {/if}
