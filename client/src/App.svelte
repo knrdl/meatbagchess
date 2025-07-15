@@ -4,6 +4,7 @@
 
   import game from './game.svelte';
   import Gamefield from './Gamefield.svelte';
+  import FabSetStyle from './FabSetStyle.svelte';
 
   let newGameDialog = $state<NewGameDialog>();
   let reload = $state(false);
@@ -34,3 +35,5 @@
 {#if !reload}
   <Gamefield onnewgame={() => startNewGame()} />
 {/if}
+
+<FabSetStyle />

@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Move, WHITE, type Square } from 'chess.js';
-    import { getPieceImage } from '.';
+    import { getPieceImage, piecesStyle } from './index.svelte';
     import { tick } from 'svelte';
 
     let { squares }: { squares: Partial<Record<Square, HTMLButtonElement>> } = $props();
@@ -25,7 +25,7 @@
     {@const toRect = squares[lastMove.to]?.getBoundingClientRect()}
     {#if fromRect && toRect}
         <img
-            src={getPieceImage({ color: lastMove.color, type: lastMove.piece })}
+            src={getPieceImage({ color: lastMove.color, type: lastMove.piece }, piecesStyle.selected)}
             alt="Piece {lastMove.color === WHITE ? 'white' : 'black'} {lastMove.piece}"
             style="
                 --x1: {fromRect.x}px;

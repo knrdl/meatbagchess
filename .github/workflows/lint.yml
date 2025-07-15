@@ -28,7 +28,7 @@ jobs:
 
   server:
     runs-on: ubuntu-latest
-    name: client lint
+    name: server lint
     steps:
     - uses: actions/checkout@v4
     - uses: actions/setup-node@v4

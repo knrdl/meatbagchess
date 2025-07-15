@@ -1,6 +1,6 @@
 <script lang="ts">
     import { KING, WHITE, type PieceSymbol, type Square } from 'chess.js';
-    import { getPieceImage } from './lib/chesspieces';
+    import { getPieceImage, piecesStyle } from './lib/chesspieces/index.svelte';
     import PromotionDialog from './PromotionDialog.svelte';
     import game from './game.svelte';
     import PieceAnimation from './lib/chesspieces/PieceAnimation.svelte';
@@ -102,7 +102,7 @@
             {!isSelected && isCheck ? 'check' : ''}
             {!isSelected && !isCheck && isLastMove ? 'last-move' : ''}
             "
-                style={piece && pieceAnimation?.lastMove?.to !== square ? `background-image: url('${getPieceImage(piece)}')` : 'background-image: none'}
+                style={piece && pieceAnimation?.lastMove?.to !== square ? `background-image: url('${getPieceImage(piece, piecesStyle.selected)}')` : 'background-image: none'}
                 onclick={() => selectSquare(square)}
             >
                 {#if x === 0}
