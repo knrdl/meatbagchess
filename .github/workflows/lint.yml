@@ -20,18 +20,16 @@ jobs:
 
   client:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
     name: client lint
     steps:
     - uses: actions/checkout@v4
     - uses: actions/setup-node@v4
-    - run: cd client && npm run ci && npm run check
+    - run: cd client && npm ci && npm run check
 
   server:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
     name: client lint
     steps:
     - uses: actions/checkout@v4
     - uses: actions/setup-node@v4
-    - run: cd server && npm run ci && npm run check
+    - run: cd server && npm ci && npm run check
