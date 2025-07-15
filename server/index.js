@@ -11,14 +11,14 @@ const io = new Server(server)
 
 /**
  * @type {Map<string, {
- *  status: 'preparing' | 'playing' | 'done', 
- *  chess?: Chess, 
+ *  status: 'preparing' | 'playing' | 'done',
+ *  chess?: Chess,
  *  drawOfferBy?: import('chess.js').Color,
  *  undoRequestBy?: import('chess.js').Color,
  *  clock?: {elapsed: {[WHITE]: number, [BLACK]: number}, stamps: {[WHITE]: number | null, [BLACK]: number | null}},
  *  undos?: {[WHITE]: number, [BLACK]: number}
  * }>}
-*/
+ */
 const games = new Map()
 
 function room(gameId) {
@@ -41,13 +41,13 @@ async function tryStartGame(gameId) {
             console.info('start game', gameId)
 
             const otherSocket = sockets.find(socket => socket !== readySocket)
-            otherSocket.data.color = (readySocket.data.color === WHITE ? BLACK : WHITE)
+            otherSocket.data.color = readySocket.data.color === WHITE ? BLACK : WHITE
 
             updateGame(gameId, {
                 status: 'playing',
                 chess: new Chess(),
                 clock: { elapsed: { [WHITE]: 0, [BLACK]: 0 }, stamps: { [WHITE]: null, [BLACK]: null } },
-                undos: { [WHITE]: 0, [BLACK]: 0 }
+                undos: { [WHITE]: 0, [BLACK]: 0 },
             })
 
             sockets.forEach(socket => {
@@ -57,7 +57,7 @@ async function tryStartGame(gameId) {
     }
 }
 
-io.on('connection', async (socket) => {
+io.on('connection', async socket => {
     const gameId = socket.handshake.query.gameId
     if (/^[a-z0-9-]{36}$/.test(gameId)) {
         if (!games.has(gameId)) {
@@ -85,7 +85,7 @@ io.on('connection', async (socket) => {
                 socket.emit('continue-game', {
                     fen: games.get(gameId).chess.fen(),
                     pgn: games.get(gameId).chess.pgn(),
-                    yourColor: socket.data.color
+                    yourColor: socket.data.color,
                 })
                 socket.emit('clock-sync', games.get(gameId).clock.elapsed)
                 io.to(room(gameId)).emit('undo-count', games.get(gameId).undos)
@@ -206,7 +206,7 @@ io.on('connection', async (socket) => {
                 }
             })
 
-            socket.on('disconnect', async (reason) => {
+            socket.on('disconnect', async reason => {
                 console.error('user disconnected:', reason)
                 if ((await io.in(room(gameId)).fetchSockets()).length === 0) {
                     games.delete(gameId) // stop game

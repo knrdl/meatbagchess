@@ -7,7 +7,7 @@
 
     let lastMove = $state<Move>()
 
-    const animationDuration = 500 // ms
+    const animationDuration = 333 // ms
     let handle: number | null = null
 
     export function animate(move: Move) {
@@ -33,8 +33,7 @@
                 --x2: {toRect.x}px;
                 --y2: {toRect.y}px;
                 --duration: {animationDuration}ms;
-                --width: {fromRect.width}px;
-                --height: {fromRect.height}px;
+                --size: {Math.max(fromRect.width, fromRect.height)}px;
             "
             class="piece"
         />
@@ -53,8 +52,8 @@
         position: fixed;
         z-index: 10;
 
-        width: var(--width);
-        height: var(--height);
+        max-width: var(--size);
+        max-height: var(--size);
     }
 
     @keyframes piecemove {

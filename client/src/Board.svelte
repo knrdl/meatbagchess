@@ -184,7 +184,14 @@
 
     .board > .square.selected {
         box-shadow: inset 0 0 20px #f8a100cc;
+    }
+
+    .board > .square.selected.pieces-style-standard {
+        /* the standard images have a transparent border which makes the images too small on mobile displays */
         background-size: 110%;
+    }
+    .board > .square.selected.pieces-style-cats {
+        background-blend-mode: multiply;
     }
 
     .board > .square:not(.selectable) {
