@@ -57,13 +57,14 @@
     button {
         text-transform: uppercase;
         color: white;
-        background: linear-gradient(45deg, darkgray, rgba(144, 144, 144, 0.936));
+        background: linear-gradient(45deg, darkgray, rgb(144 144 144 / 93.6%));
     }
 
     button.accept {
-        background: linear-gradient(45deg, green, rgba(144, 238, 144, 0.936));
+        background: linear-gradient(45deg, green, rgb(144 238 144 / 93.6%));
     }
+
     button.reject {
-        background: linear-gradient(45deg, red, rgba(139, 0, 0, 0.841));
+        background: linear-gradient(45deg, red, rgb(139 0 0 / 84.1%));
     }
 </style>

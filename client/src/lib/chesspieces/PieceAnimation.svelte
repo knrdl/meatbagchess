@@ -28,6 +28,7 @@
             src={getPieceImage({ color: lastMove.color, type: lastMove.piece }, piecesStyle.selected)}
             alt="Piece {lastMove.color === WHITE ? 'white' : 'black'} {lastMove.piece}"
             style="
+
                 --x1: {fromRect.x}px;
                 --y1: {fromRect.y}px;
                 --x2: {toRect.x}px;
@@ -46,12 +47,10 @@
         animation-iteration-count: 1;
         animation-timing-function: ease-in-out;
         animation-duration: var(--duration);
-
         left: 0;
         top: 0;
         position: fixed;
         z-index: 10;
-
         max-width: var(--size);
         max-height: var(--size);
     }

@@ -49,7 +49,7 @@
 
 <style>
     div {
-        font-family: 'Orbitron';
+        font-family: Orbitron, monospace;
         letter-spacing: 0.125rem;
         font-size: large;
         min-width: 5rem;

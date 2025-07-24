@@ -140,7 +140,6 @@
         background-repeat: no-repeat;
         background-position: center;
         transition: background-image 2s ease-in-out;
-
         position: relative;
         color: white;
         display: flex;
@@ -164,22 +163,22 @@
     }
 
     .board > .square > .move-target.our-turn {
-        box-shadow: 0px 0px 10px rgba(162, 30, 135, 0.5);
-        background-color: rgba(162, 30, 135, 0.5);
+        box-shadow: 0 0 10px rgb(162 30 135 / 50%);
+        background-color: rgb(162 30 135 / 50%);
     }
 
     .board > .square > .move-target.our-turn.attack {
-        box-shadow: 0px 0px 10px rgba(255, 70, 9, 0.667);
-        background-color: rgba(255, 70, 9, 0.8);
+        box-shadow: 0 0 10px rgb(255 70 9 / 66.7%);
+        background-color: rgb(255 70 9 / 80%);
     }
 
     .board > .square > .move-target.their-turn {
-        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.667);
+        box-shadow: 0 0 10px rgb(0 0 0 / 66.7%);
     }
 
     .board > .square > .move-target.their-turn.attack {
         border: 1px solid #0007;
-        background-color: rgba(250, 100, 100, 0.75);
+        background-color: rgb(250 100 100 / 75%);
     }
 
     .board > .square.selected {
@@ -190,6 +189,7 @@
         /* the standard images have a transparent border which makes the images too small on mobile displays */
         background-size: 110%;
     }
+
     .board > .square.selected.pieces-style-cats {
         background-blend-mode: multiply;
     }
@@ -215,7 +215,7 @@
             0 -1px black;
     }
 
-    @media screen and (max-width: 500px) {
+    @media screen and (width <= 500px) {
         .board {
             gap: 0;
         }

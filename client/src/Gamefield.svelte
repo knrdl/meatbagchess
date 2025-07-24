@@ -52,8 +52,7 @@
             'our-clock'
             'our-captures'
             / auto;
-        justify-content: center;
-        align-content: center;
+        place-content: center center;
     }
 
     .playfield > * {
@@ -81,6 +80,7 @@
                 'board . our-captures'
                 / auto 1rem min-content;
         }
+
         .board-container {
             width: 100%;
             height: calc(100vh - 6rem);
