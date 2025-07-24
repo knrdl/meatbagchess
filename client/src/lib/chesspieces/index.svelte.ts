@@ -24,7 +24,22 @@ import wpCat from './cats/wP.png'
 import wqCat from './cats/wQ.png'
 import wrCat from './cats/wR.png'
 
-const piecesImages: Record<'standard' | 'cats', Record<`${Color}${PieceSymbol}`, string>> = {
+import bbHanddrawn from './handdrawn/bB.png'
+import bkHanddrawn from './handdrawn/bK.png'
+import bnHanddrawn from './handdrawn/bN.png'
+import bpHanddrawn from './handdrawn/bP.png'
+import bqHanddrawn from './handdrawn/bQ.png'
+import brHanddrawn from './handdrawn/bR.png'
+import wbHanddrawn from './handdrawn/wB.png'
+import wkHanddrawn from './handdrawn/wK.png'
+import wnHanddrawn from './handdrawn/wN.png'
+import wpHanddrawn from './handdrawn/wP.png'
+import wqHanddrawn from './handdrawn/wQ.png'
+import wrHanddrawn from './handdrawn/wR.png'
+
+type PiecesStyle = 'standard' | 'cats' | 'handdrawn'
+
+const piecesImages: Record<PiecesStyle, Record<`${Color}${PieceSymbol}`, string>> = {
     standard: {
         bb: bbStandard,
         bk: bkStandard,
@@ -53,7 +68,23 @@ const piecesImages: Record<'standard' | 'cats', Record<`${Color}${PieceSymbol}`,
         wq: wqCat,
         wr: wrCat,
     },
+    handdrawn: {
+        bb: bbHanddrawn,
+        bk: bkHanddrawn,
+        bn: bnHanddrawn,
+        bp: bpHanddrawn,
+        bq: bqHanddrawn,
+        br: brHanddrawn,
+        wb: wbHanddrawn,
+        wk: wkHanddrawn,
+        wn: wnHanddrawn,
+        wp: wpHanddrawn,
+        wq: wqHanddrawn,
+        wr: wrHanddrawn,
+    },
 }
+
+export const PIECES_STYLES = Object.keys(piecesImages).sort() as PiecesStyle[]
 
 export const PIECES_STYLE_KEY = 'selectedPiecesStyle'
 export let piecesStyle = $state<{ selected: keyof typeof piecesImages }>({
