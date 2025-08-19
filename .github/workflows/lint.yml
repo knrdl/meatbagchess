@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: hadolint/hadolint-action@v3.1.0
         with:
           dockerfile: Dockerfile
@@ -22,7 +22,7 @@ jobs:
     runs-on: ubuntu-latest
     name: client lint
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
     - uses: actions/setup-node@v4
     - run: cd client && npm ci && npm run check
 
@@ -30,6 +30,6 @@ jobs:
     runs-on: ubuntu-latest
     name: server lint
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
     - uses: actions/setup-node@v4
     - run: cd server && npm ci && npm run check
