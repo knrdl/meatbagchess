@@ -5,6 +5,7 @@
     import game from './game.svelte'
     import Gamefield from './Gamefield.svelte'
     import FabSetStyle from './FabSetStyle.svelte'
+    import { SvelteURLSearchParams } from 'svelte/reactivity'
 
     let newGameDialog = $state<NewGameDialog>()
     let reload = $state(false)
@@ -13,7 +14,7 @@
 
     onMount(async () => {
         if (gameId?.length !== 36) {
-            const params = new URLSearchParams(window.location.search)
+            const params = new SvelteURLSearchParams(window.location.search)
             params.set('gameid', window.crypto.randomUUID())
             window.location.search = params.toString()
         } else {

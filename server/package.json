@@ -11,9 +11,9 @@
   "description": "",
   "type": "module",
   "dependencies": {
-    "@types/node": "^22.9.3",
-    "chess.js": "^1.0.0-beta.8",
-    "express": "^4.21.2",
+    "@types/node": "^25.0.3",
+    "chess.js": "^1.4.0",
+    "express": "^5.2.1",
     "socket.io": "^4.8.0"
   },
   "devDependencies": {

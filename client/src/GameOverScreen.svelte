@@ -16,7 +16,7 @@
         border: none;
         margin: 0;
         padding: 0.5rem;
-        word-wrap: break-word;
+        overflow-wrap: break-word;
         color: white;
 
         /* stay in background */
