@@ -11,6 +11,19 @@ import wpStandard from './standard/wP.png'
 import wqStandard from './standard/wQ.png'
 import wrStandard from './standard/wR.png'
 
+import bbBrick from './bricks/bB.png'
+import bkBrick from './bricks/bK.png'
+import bnBrick from './bricks/bN.png'
+import bpBrick from './bricks/bP.png'
+import bqBrick from './bricks/bQ.png'
+import brBrick from './bricks/bR.png'
+import wbBrick from './bricks/wB.png'
+import wkBrick from './bricks/wK.png'
+import wnBrick from './bricks/wN.png'
+import wpBrick from './bricks/wP.png'
+import wqBrick from './bricks/wQ.png'
+import wrBrick from './bricks/wR.png'
+
 import bbCat from './cats/bB.png'
 import bkCat from './cats/bK.png'
 import bnCat from './cats/bN.png'
@@ -37,7 +50,7 @@ import wpHanddrawn from './handdrawn/wP.png'
 import wqHanddrawn from './handdrawn/wQ.png'
 import wrHanddrawn from './handdrawn/wR.png'
 
-type PiecesStyle = 'standard' | 'cats' | 'handdrawn'
+type PiecesStyle = 'standard' | 'cats' | 'handdrawn' | 'bricks'
 
 const piecesImages: Record<PiecesStyle, Record<`${Color}${PieceSymbol}`, string>> = {
     standard: {
@@ -53,6 +66,20 @@ const piecesImages: Record<PiecesStyle, Record<`${Color}${PieceSymbol}`, string>
         wp: wpStandard,
         wq: wqStandard,
         wr: wrStandard,
+    },
+    bricks: {
+        bb: bbBrick,
+        bk: bkBrick,
+        bn: bnBrick,
+        bp: bpBrick,
+        bq: bqBrick,
+        br: brBrick,
+        wb: wbBrick,
+        wk: wkBrick,
+        wn: wnBrick,
+        wp: wpBrick,
+        wq: wqBrick,
+        wr: wrBrick,
     },
     cats: {
         bb: bbCat,
