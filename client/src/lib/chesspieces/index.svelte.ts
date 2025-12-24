@@ -50,7 +50,20 @@ import wpHanddrawn from './handdrawn/wP.png'
 import wqHanddrawn from './handdrawn/wQ.png'
 import wrHanddrawn from './handdrawn/wR.png'
 
-type PiecesStyle = 'standard' | 'cats' | 'handdrawn' | 'bricks'
+import bbScifi from './scifi/bB.png'
+import bkScifi from './scifi/bK.png'
+import bnScifi from './scifi/bN.png'
+import bpScifi from './scifi/bP.png'
+import bqScifi from './scifi/bQ.png'
+import brScifi from './scifi/bR.png'
+import wbScifi from './scifi/wB.png'
+import wkScifi from './scifi/wK.png'
+import wnScifi from './scifi/wN.png'
+import wpScifi from './scifi/wP.png'
+import wqScifi from './scifi/wQ.png'
+import wrScifi from './scifi/wR.png'
+
+type PiecesStyle = 'standard' | 'cats' | 'handdrawn' | 'bricks' | 'scifi'
 
 const piecesImages: Record<PiecesStyle, Record<`${Color}${PieceSymbol}`, string>> = {
     standard: {
@@ -108,6 +121,20 @@ const piecesImages: Record<PiecesStyle, Record<`${Color}${PieceSymbol}`, string>
         wp: wpHanddrawn,
         wq: wqHanddrawn,
         wr: wrHanddrawn,
+    },
+    scifi: {
+        bb: bbScifi,
+        bk: bkScifi,
+        bn: bnScifi,
+        bp: bpScifi,
+        bq: bqScifi,
+        br: brScifi,
+        wb: wbScifi,
+        wk: wkScifi,
+        wn: wnScifi,
+        wp: wpScifi,
+        wq: wqScifi,
+        wr: wrScifi,
     },
 }
 
