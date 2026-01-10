@@ -76,7 +76,20 @@ import wpGothic from './gothic/wP.png'
 import wqGothic from './gothic/wQ.png'
 import wrGothic from './gothic/wR.png'
 
-type PiecesStyle = 'standard' | 'cats' | 'handdrawn' | 'bricks' | 'scifi' | 'gothic'
+import bbCatcus from './catcus/bB.png'
+import bkCatcus from './catcus/bK.png'
+import bnCatcus from './catcus/bN.png'
+import bpCatcus from './catcus/bP.png'
+import bqCatcus from './catcus/bQ.png'
+import brCatcus from './catcus/bR.png'
+import wbCatcus from './catcus/wB.png'
+import wkCatcus from './catcus/wK.png'
+import wnCatcus from './catcus/wN.png'
+import wpCatcus from './catcus/wP.png'
+import wqCatcus from './catcus/wQ.png'
+import wrCatcus from './catcus/wR.png'
+
+type PiecesStyle = 'standard' | 'cats' | 'handdrawn' | 'bricks' | 'scifi' | 'gothic' | 'catcus'
 
 const piecesImages: Record<PiecesStyle, Record<`${Color}${PieceSymbol}`, string>> = {
     standard: {
@@ -162,6 +175,20 @@ const piecesImages: Record<PiecesStyle, Record<`${Color}${PieceSymbol}`, string>
         wp: wpGothic,
         wq: wqGothic,
         wr: wrGothic,
+    },
+    catcus: {
+        bb: bbCatcus,
+        bk: bkCatcus,
+        bn: bnCatcus,
+        bp: bpCatcus,
+        bq: bqCatcus,
+        br: brCatcus,
+        wb: wbCatcus,
+        wk: wkCatcus,
+        wn: wnCatcus,
+        wp: wpCatcus,
+        wq: wqCatcus,
+        wr: wrCatcus,
     },
 }
 
