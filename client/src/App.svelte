@@ -25,7 +25,7 @@
     async function startNewGame() {
         newGameDialog!.show()
         reload = true
-        await game.init(gameId!, () => newGameDialog!.close())
+        game.init(gameId!, () => newGameDialog!.close())
         await tick()
         reload = false
     }
