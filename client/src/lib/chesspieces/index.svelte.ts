@@ -89,7 +89,20 @@ import wpCatcus from './catcus/wP.png'
 import wqCatcus from './catcus/wQ.png'
 import wrCatcus from './catcus/wR.png'
 
-type PiecesStyle = 'standard' | 'cats' | 'handdrawn' | 'bricks' | 'scifi' | 'gothic' | 'catcus'
+import bbDinos from './dinos/bB.png'
+import bkDinos from './dinos/bK.png'
+import bnDinos from './dinos/bN.png'
+import bpDinos from './dinos/bP.png'
+import bqDinos from './dinos/bQ.png'
+import brDinos from './dinos/bR.png'
+import wbDinos from './dinos/wB.png'
+import wkDinos from './dinos/wK.png'
+import wnDinos from './dinos/wN.png'
+import wpDinos from './dinos/wP.png'
+import wqDinos from './dinos/wQ.png'
+import wrDinos from './dinos/wR.png'
+
+type PiecesStyle = 'standard' | 'cats' | 'handdrawn' | 'bricks' | 'scifi' | 'gothic' | 'catcus' | 'dinos'
 
 const piecesImages: Record<PiecesStyle, Record<`${Color}${PieceSymbol}`, string>> = {
     standard: {
@@ -189,6 +202,20 @@ const piecesImages: Record<PiecesStyle, Record<`${Color}${PieceSymbol}`, string>
         wp: wpCatcus,
         wq: wqCatcus,
         wr: wrCatcus,
+    },
+    dinos: {
+        bb: bbDinos,
+        bk: bkDinos,
+        bn: bnDinos,
+        bp: bpDinos,
+        bq: bqDinos,
+        br: brDinos,
+        wb: wbDinos,
+        wk: wkDinos,
+        wn: wnDinos,
+        wp: wpDinos,
+        wq: wqDinos,
+        wr: wrDinos,
     },
 }
 
