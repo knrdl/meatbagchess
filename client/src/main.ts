@@ -1,6 +1,6 @@
 import { mount } from 'svelte'
 import './app.css'
-import '@fontsource/orbitron'
+import '@fontsource/orbitron/index.css'
 import App from './App.svelte'
 
 const app = mount(App, {
