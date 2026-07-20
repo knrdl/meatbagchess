@@ -23,7 +23,7 @@ jobs:
     name: client lint
     steps:
     - uses: actions/checkout@v7
-    - uses: actions/setup-node@v6
+    - uses: actions/setup-node@v7
     - run: cd client && npm install && npm run check
 
   server:
@@ -31,5 +31,5 @@ jobs:
     name: server lint
     steps:
     - uses: actions/checkout@v7
-    - uses: actions/setup-node@v6
+    - uses: actions/setup-node@v7
     - run: cd server && npm install && npm run check
